@@ -1,13 +1,9 @@
-MicroManiacs
+Grid Wars JS
 ============
 
 Introduction
 ------------
-3d webgl game based on three.js + ammo.js.
-As ammo.js is implemented using a web worker, a python simple server is needed
-to run the game because of security matters.
-
-Last release: http://linorabolini.github.io/
+3d webgl game based on three.js.
 
 Licence
 -------
@@ -25,7 +21,3 @@ Installation
 Known issues
 ------------
 - No reset button
-- If the car flips down there is no way to flip it back
-
-
-
