@@ -24,9 +24,11 @@ require.config({
         'levelModel'        : 'src/LevelModel',
         'app'               : 'src/App',
         'gameObject'        : 'src/GameObject',
+        'playArea'          : 'src/PlayArea',
         'weapon'            : 'src/Weapon',
             // components
             'followTargetsMover'            : 'src/components/FollowTargetsMover',
+            'randomPointMover'              : 'src/components/RandomPointMover',
             'inventoryComponent'            : 'src/components/InventoryComponent',
             'simpleMover'                   : 'src/components/SimpleMover',
             'spriteComponent'               : 'src/components/SpriteComponent',

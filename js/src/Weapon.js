@@ -1,9 +1,9 @@
 define(function (require) {
 
-    function Weapon(bullets) {
+    function Weapon(bullets, delay) {
         this.bullets = bullets || [];
         this.elapsed = 0;
-        this.delay = 1/10;
+        this.delay = delay || 1/10;
         this.canFire = true;
     }
 

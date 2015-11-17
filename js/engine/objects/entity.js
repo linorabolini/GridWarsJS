@@ -111,7 +111,6 @@ define(function (require) {
         addComponent: function (component)
         {
             component.setup(this);
-            component.activate(this);
             this.components.push(component);
         }
     });

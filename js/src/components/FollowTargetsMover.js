@@ -5,7 +5,7 @@ define(function (require){
 
     function FollowTargetsMover(speed, targets) {
         this.speed = speed || 5;
-        this.targets = targets || 5;
+        this.targets = targets;
         this.moveDirection = new THREE.Vector3(0,0,0);
         this.currentTarget = null;
     };

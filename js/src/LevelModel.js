@@ -7,9 +7,11 @@ define(function (require) {
         Controller                  = require('controller'),
         GameObject                  = require('gameObject'),
         Weapon                      = require('weapon'),
+        PlayArea                    = require('playArea'),
         InventoryComponent          = require('inventoryComponent'),
         PlayerControllerComponent   = require('playerControllerComponent'),
         FollowTargetsMover          = require('followTargetsMover'),
+        RandomPointMover            = require('randomPointMover'),
         SpriteComponent             = require('spriteComponent'),
         SimpleMover                 = require('simpleMover'),
         _                           = require('underscore'),
@@ -42,6 +44,10 @@ define(function (require) {
 
             // scene setup
             this.scene = new THREE.Scene();
+
+            // play Area
+            
+            this.playArea = new PlayArea(30, 15);
 
             // camera
             this.setupCamera();
@@ -104,14 +110,28 @@ define(function (require) {
             };
         },
         createEnemies: function () {
-            for (var i = 20 - 1; i >= 0; i--) {
-                var enemy = new GameObject([
-                        new SpriteComponent(this.scene, "assets/images/Pointer.png"),
+            var i;
+            var enemy;
+
+            for (i = 20 - 1; i >= 0; i--) {
+                enemy = new GameObject([
+                        new SpriteComponent(this.scene, "assets/images/Seeker.png"),
                         new FollowTargetsMover(5, this.players)
                     ]);
 
                 enemy.position.set(Math.random() > 0.5 ? 15 : -15, Math.random() > 0.5 ? 15 : -15, 0);
                 this.enemies.push(enemy);   
+            };
+
+            for (i = 20 - 1; i >= 0; i--) {
+                enemy = new GameObject([
+                        new SpriteComponent(this.scene, "assets/images/Pointer.png"),
+                        new RandomPointMover(7, this.playArea),
+                    ]);
+
+                enemy.position.set(Math.random() > 0.5 ? 15 : -15, Math.random() > 0.5 ? 15 : -15, 0);
+                enemy.activate();
+                this.enemies.push(enemy);
             };
         },
         addPlayers: function (inputSources) {
@@ -133,6 +153,7 @@ define(function (require) {
                 ]);
 
             player.controller = controller;
+            player.activate();
 
             this.setPlayerById(config.internalSourceId, player);
         },
@@ -160,26 +181,29 @@ define(function (require) {
             this.render();
         },
         updateEnemies: function (dt) {
-            var gotmp1;
+            var go;
             var i;
 
             for (i = this.enemies.length - 1; i >= 0; i--) {
-                gotmp1 = this.enemies[i];
-                gotmp1.update(dt);
+                go = this.enemies[i];
+                go.update(dt);
             };
         },
         updatePlayers: function (dt) {
             var go;
-            for (var i = this.players.length - 1; i >= 0; i--) {
+            var i;
+            for (i = this.players.length - 1; i >= 0; i--) {
                 go = this.players[i];
                 go.update(dt);
             };
         },
         updateBullets: function (dt) {
-            var w = 30;
-            var h = 20;
+            var w = this.playArea.width;
+            var h = this.playArea.height;
             var go;
-            for (var i = this.bullets.length - 1; i >= 0; i--) {
+            var i;
+
+            for (i = this.bullets.length - 1; i >= 0; i--) {
                 go = this.bullets[i];
                 go.update(dt);
                 if ( go.position.x < -w || go.position.y < -h || go.position.x > w || go.position.y > h ) {
@@ -234,6 +258,31 @@ define(function (require) {
                         break;
                     }
                 };
+            };
+
+            //  enemy vs player
+
+            for (i = this.enemies.length - 1; i >= 0; i--) {
+                gotmp1 = this.enemies[i];
+                if(!gotmp1.isActive) {
+                    continue;
+                }
+                for (j = this.players.length - 1; j >= 0; j--) {
+                    gotmp2 = this.players[j];
+                    if(!gotmp2.isActive) {
+                        continue;
+                    }
+                    this.tmpVector.subVectors(gotmp2.position, gotmp1.position);
+                    if(this.tmpVector.lengthSq() < gotmp2.radius + gotmp1.radius) {
+                        this.onPlayerDead(gotmp2);
+                        return;
+                    }
+                };
+            };
+        },
+        onPlayerDead: function (player) {
+            for (var k = this.enemies.length - 1; k >= 0; k--) {
+                this.enemies[k].position.set(Math.random() > 0.5 ? 15 : -15, Math.random() > 0.5 ? 15 : -15, 0);
             };
         },
         render: function () {
