@@ -39,10 +39,10 @@ define(function (require) {
         var inputY = this.controller.get("87") - this.controller.get("83");
 
         // TODO: move this to a mover
-        this.moveDirection.set(inputX, inputY, 0).normalize().multiplyScalar(this.speed * delta);
+        this.moveDirection.set(inputX, inputY, 0).normalize().multiplyScalar(this.speed);
 
         // TODO: move this to a mover
-        go.position.add(this.moveDirection);
+        go.velocity.add(this.moveDirection);
     }
 
     PlayerController.prototype.updateRotation = function(go, delta) {

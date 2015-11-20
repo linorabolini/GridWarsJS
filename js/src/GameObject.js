@@ -9,6 +9,7 @@ define(function (require) {
         // variables
 
         position: null,
+        velocity: null,
         rotation: null,
         radius: null,
         
@@ -17,6 +18,7 @@ define(function (require) {
 
         init: function (components, radius) {
             this.position = new THREE.Vector3(0, 0, 0);
+            this.velocity = new THREE.Vector3(0, 0, 0);
             this.rotation = 0;
             this.radius = radius || 0.5;
             if(!radius) {
@@ -24,6 +26,15 @@ define(function (require) {
             }
 
             this.__init(components);
+        },
+        update: function (delta) {
+            this.velocity.set(0, 0, 0);
+
+            this.__update(delta);
+        },
+        posUpdate: function (delta) {
+            this.velocity.multiplyScalar(delta);
+            this.position.add(this.velocity);
         }
     });
 });

@@ -6,18 +6,17 @@ define(function (require){
     function SimpleMover(speed) {
         this.speed = speed || 40;
         this.moveDirection = new THREE.Vector3(0,0,0);
-        this.moveDirectionCopy = new THREE.Vector3(0,0,0);
     };
 
     SimpleMover.prototype.setup = function (go) { }
     SimpleMover.prototype.update = function (go, delta) {
-        this.moveDirectionCopy.copy(this.moveDirection);
-        go.position.add(this.moveDirectionCopy.multiplyScalar(this.speed * delta));
+        go.velocity.add(this.moveDirection);
     }
     SimpleMover.prototype.render = function (go) { }
     SimpleMover.prototype.dispose = function (go) { }
     SimpleMover.prototype.activate = function (go) {
         this.moveDirection.set(Math.cos(go.rotation), Math.sin(go.rotation), 0);
+        this.moveDirection.multiplyScalar(this.speed);
     }
     SimpleMover.prototype.deactivate = function (go) { }
 

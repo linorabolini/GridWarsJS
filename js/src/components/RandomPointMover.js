@@ -11,9 +11,12 @@ define(function (require){
 
     RandomPointMover.prototype.setup = function (go) { }
     RandomPointMover.prototype.update = function (go, delta) {
-        go.position.lerp(this.currentTarget, 0.5 * delta);
+        this.moveDirection.subVectors(this.currentTarget, go.position).multiplyScalar(0.5).clampLength(0, this.speed);
+        go.velocity.add(this.moveDirection);
+
+        go.rotation = Math.atan2(this.moveDirection.y, this.moveDirection.x);
         
-        if(go.position.distanceToSquared(this.currentTarget) < 1) {
+        if(go.position.distanceToSquared(this.currentTarget) < this.speed) {
             this.updateTargetPoint(go);
         }
     }
@@ -27,9 +30,6 @@ define(function (require){
     RandomPointMover.prototype.updateTargetPoint = function (go) {
         this.currentTarget.set(this.playArea.getRandomXCoord(), this.playArea.getRandomYCoord(), 0);
         this.moveDirection.subVectors(this.currentTarget, go.position);
-        this.moveDirection.clampLength(0, 15);
-        this.currentTarget.copy(go.position).add(this.moveDirection);
-        go.rotation = Math.atan2(this.moveDirection.y, this.moveDirection.x);
     }
 
     return RandomPointMover;

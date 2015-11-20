@@ -28,7 +28,7 @@ define(function (require) {
     Controller.prototype.TRUE = true;
     Controller.prototype.FALSE = false;
     Controller.prototype.MOUSE_LEFT = "mouse_left";
-    Controller.prototype.BUTTON_A = 74;
+    Controller.prototype.BUTTON_A = 75;
     Controller.prototype.MOUSE_RIGHT = "mouse_right";
     Controller.prototype.MOUSE_X = "mouse_x";
     Controller.prototype.MOUSE_Y = "mouse_y";

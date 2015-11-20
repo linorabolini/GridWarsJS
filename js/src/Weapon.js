@@ -1,10 +1,18 @@
 define(function (require) {
 
+    var THREE = require('three');
+
     function Weapon(bullets, delay) {
         this.bullets = bullets || [];
         this.elapsed = 0;
         this.delay = delay || 1/10;
         this.canFire = true;
+        this.cannonOffsets = [
+            new THREE.Vector3( 1, 0.3, 0 ),
+            new THREE.Vector3( 1, -0.3, 0 )
+        ];
+
+        this.tmpVector = new THREE.Vector3( 0, 0, 0 );
     }
 
     Weapon.prototype.update = function (go, delta) {
@@ -25,21 +33,27 @@ define(function (require) {
     Weapon.prototype.render = function (go) { }
 
     Weapon.prototype.doUseBy = function (go) {
-        var bullet = this.getBullet();
-        if (bullet) {
-            this.fire(bullet, go);
-        }
+        for (var i = this.cannonOffsets.length - 1; i >= 0; i--) {
+            this.fire(this.getBullet(), go, this.cannonOffsets[i]);
+        };
+        this.canFire = false;
     }
 
-    Weapon.prototype.fire = function (bullet, go) {
-        if(!this.canFire)
+    Weapon.prototype.fire = function (bullet, go, offset) {
+        if(!this.canFire || !bullet)
             return
+
+        var quaternion = new THREE.Quaternion();
+        quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), go.rotation );
+
+        this.tmpVector.copy(offset);
+        this.tmpVector.applyQuaternion(quaternion);
         
         bullet.position.copy(go.position);
+        bullet.position.add(this.tmpVector);
         bullet.rotation = go.rotation;
         bullet.activate();
         this.elapsed = 0;
-        this.canFire = false;
     }
 
     Weapon.prototype.getBullet = function () {

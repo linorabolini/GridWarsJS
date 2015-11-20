@@ -24,6 +24,7 @@ define(function (require) {
         players: null,
         enemies: null,
         bullets: null,
+        gameObjects: null,
         controllers: null,
         scene: null,
         camera: null,
@@ -39,6 +40,7 @@ define(function (require) {
             this.players     = [];
             this.enemies     = [];
             this.bullets     = [];
+            this.gameObjects = [this.players, this.enemies, this.bullets];
 
             this.tmpVector = new THREE.Vector3(0,0,0);
 
@@ -46,8 +48,23 @@ define(function (require) {
             this.scene = new THREE.Scene();
 
             // play Area
-            
-            this.playArea = new PlayArea(30, 15);
+            this.playArea = new PlayArea(60, 30);
+
+            var material = new THREE.LineBasicMaterial({
+                color: 0xf0f0f0
+            });
+
+            var geometry = new THREE.Geometry();
+            geometry.vertices.push(
+                new THREE.Vector3( this.playArea.left, this.playArea.top, 0 ),
+                new THREE.Vector3( this.playArea.right, this.playArea.top, 0 ),
+                new THREE.Vector3( this.playArea.right, this.playArea.bottom, 0 ),
+                new THREE.Vector3( this.playArea.left, this.playArea.bottom, 0 ),
+                new THREE.Vector3( this.playArea.left, this.playArea.top, 0 )
+            );
+
+            var line = new THREE.Line( geometry, material );
+            this.scene.add( line );
 
             // camera
             this.setupCamera();
@@ -113,24 +130,23 @@ define(function (require) {
             var i;
             var enemy;
 
-            for (i = 20 - 1; i >= 0; i--) {
+            for (i = 200 - 1; i >= 0; i--) {
                 enemy = new GameObject([
                         new SpriteComponent(this.scene, "assets/images/Seeker.png"),
-                        new FollowTargetsMover(5, this.players)
+                        new FollowTargetsMover(7, this.players)
                     ]);
 
-                enemy.position.set(Math.random() > 0.5 ? 15 : -15, Math.random() > 0.5 ? 15 : -15, 0);
+                this.spawnEnemy(enemy);
                 this.enemies.push(enemy);   
             };
 
-            for (i = 20 - 1; i >= 0; i--) {
+            for (i = 10 - 1; i >= 0; i--) {
                 enemy = new GameObject([
                         new SpriteComponent(this.scene, "assets/images/Pointer.png"),
                         new RandomPointMover(7, this.playArea),
                     ]);
 
-                enemy.position.set(Math.random() > 0.5 ? 15 : -15, Math.random() > 0.5 ? 15 : -15, 0);
-                enemy.activate();
+                this.spawnEnemy(enemy);
                 this.enemies.push(enemy);
             };
         },
@@ -170,46 +186,24 @@ define(function (require) {
             document.body.removeChild( this.renderer.domElement );
         },
         update: function (dt) {
+            var i, j;
             this.__update(dt);
 
-            this.updatePlayers(dt);
-            this.updateBullets(dt);
-            this.updateEnemies(dt);
+            for (i = this.gameObjects.length - 1; i >= 0; i--) {
+                for (j = this.gameObjects[i].length - 1; j >= 0; j--) {
+                    this.gameObjects[i][j].update(dt);
+                };
+            };
 
             this.checkCollisions(dt);
 
+            for (i = this.gameObjects.length - 1; i >= 0; i--) {
+                for (j = this.gameObjects[i].length - 1; j >= 0; j--) {
+                    this.gameObjects[i][j].posUpdate(dt);
+                };
+            };
+
             this.render();
-        },
-        updateEnemies: function (dt) {
-            var go;
-            var i;
-
-            for (i = this.enemies.length - 1; i >= 0; i--) {
-                go = this.enemies[i];
-                go.update(dt);
-            };
-        },
-        updatePlayers: function (dt) {
-            var go;
-            var i;
-            for (i = this.players.length - 1; i >= 0; i--) {
-                go = this.players[i];
-                go.update(dt);
-            };
-        },
-        updateBullets: function (dt) {
-            var w = this.playArea.width;
-            var h = this.playArea.height;
-            var go;
-            var i;
-
-            for (i = this.bullets.length - 1; i >= 0; i--) {
-                go = this.bullets[i];
-                go.update(dt);
-                if ( go.position.x < -w || go.position.y < -h || go.position.x > w || go.position.y > h ) {
-                    go.deactivate();
-                }
-            };
         },
         checkCollisions: function (dt) {
             //  enemy vs enemy
@@ -229,22 +223,33 @@ define(function (require) {
                         continue;
                     }
                     this.tmpVector.subVectors(gotmp2.position, gotmp1.position);
-                    if(this.tmpVector.lengthSq() < gotmp2.radius + gotmp1.radius) {
-                        gotmp2.position.add(this.tmpVector.multiplyScalar(dt * 2));
+                    var lenSq = this.tmpVector.lengthSq();
+                    if(lenSq < gotmp2.radius + gotmp1.radius) {
+                        this.tmpVector.multiplyScalar( 3 / (lenSq + 1));
+                        gotmp2.velocity.add(this.tmpVector);
+                        gotmp1.velocity.sub(this.tmpVector);
                     }
                 };
             };
 
-
             // bullet vs enemy
             var bullet;
             var enemy;
+            var w = this.playArea.width/2;
+            var h = this.playArea.height/2;
             
             for (i = this.bullets.length - 1; i >= 0; i--) {
                 bullet = this.bullets[i];
                 if(!bullet.isActive) {
                     continue;
                 }
+
+                // bullet vs boundaries
+                if ( bullet.position.x < -w || bullet.position.y < -h || bullet.position.x > w || bullet.position.y > h ) {
+                    bullet.deactivate();
+                }
+
+                // bullet vs enemies
                 for (j = this.enemies.length - 1; j >= 0; j--) {
                     enemy = this.enemies[j];
                     if(!enemy.isActive) {
@@ -253,8 +258,8 @@ define(function (require) {
                     this.tmpVector.subVectors(enemy.position, bullet.position);
                     if(this.tmpVector.lengthSq() < enemy.radius + bullet.radius) {
                         bullet.deactivate();
-                        // enemy.deactivate();
-                        enemy.position.set(Math.random() > 0.5 ? 15 : -15, Math.random() > 0.5 ? 15 : -15, 0);
+                        enemy.deactivate();
+                        this.spawnEnemy(enemy);
                         break;
                     }
                 };
@@ -274,7 +279,7 @@ define(function (require) {
                     }
                     this.tmpVector.subVectors(gotmp2.position, gotmp1.position);
                     if(this.tmpVector.lengthSq() < gotmp2.radius + gotmp1.radius) {
-                        this.onPlayerDead(gotmp2);
+                        // this.onPlayerDead(gotmp2);
                         return;
                     }
                 };
@@ -282,24 +287,25 @@ define(function (require) {
         },
         onPlayerDead: function (player) {
             for (var k = this.enemies.length - 1; k >= 0; k--) {
-                this.enemies[k].position.set(Math.random() > 0.5 ? 15 : -15, Math.random() > 0.5 ? 15 : -15, 0);
+                var enemy = this.enemies[k];
+                enemy.deactivate();
+                this.spawnEnemy(enemy);
             };
+        },
+        spawnEnemy: function (enemy) {
+            var xPos = Math.random() > 0.5? this.playArea.right - Math.random() : this.playArea.left + Math.random();
+            var yPos = Math.random() > 0.5? this.playArea.top - Math.random() : this.playArea.bottom + Math.random();
+            enemy.position.set(xPos, yPos, 0);
+            enemy.activate();
         },
         render: function () {
 
-            var i;
-            for (i = this.players.length - 1; i >= 0; i--) {
-                this.players[i].render();
+            var i, j;
+            for (i = this.gameObjects.length - 1; i >= 0; i--) {
+                for (j = this.gameObjects[i].length - 1; j >= 0; j--) {
+                    this.gameObjects[i][j].render();
+                };
             };
-
-            for (i = this.bullets.length - 1; i >= 0; i--) {
-                this.bullets[i].render();
-            };
-
-            for (i = this.enemies.length - 1; i >= 0; i--) {
-                this.enemies[i].render();
-            };
-
 
             this.renderer.render(this.scene, this.camera);
         },
