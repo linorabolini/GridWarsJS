@@ -49,22 +49,7 @@ define(function (require) {
 
             // play Area
             this.playArea = new PlayArea(60, 30);
-
-            var material = new THREE.LineBasicMaterial({
-                color: 0xf0f0f0
-            });
-
-            var geometry = new THREE.Geometry();
-            geometry.vertices.push(
-                new THREE.Vector3( this.playArea.left, this.playArea.top, 0 ),
-                new THREE.Vector3( this.playArea.right, this.playArea.top, 0 ),
-                new THREE.Vector3( this.playArea.right, this.playArea.bottom, 0 ),
-                new THREE.Vector3( this.playArea.left, this.playArea.bottom, 0 ),
-                new THREE.Vector3( this.playArea.left, this.playArea.top, 0 )
-            );
-
-            var line = new THREE.Line( geometry, material );
-            this.scene.add( line );
+            this.scene.add( this.playArea.scene );
 
             // camera
             this.setupCamera();
@@ -130,7 +115,7 @@ define(function (require) {
             var i;
             var enemy;
 
-            for (i = 200 - 1; i >= 0; i--) {
+            for (i = 50 - 1; i >= 0; i--) {
                 enemy = new GameObject([
                         new SpriteComponent(this.scene, "assets/images/Seeker.png"),
                         new FollowTargetsMover(7, this.players)
@@ -207,59 +192,55 @@ define(function (require) {
         },
         checkCollisions: function (dt) {
             //  enemy vs enemy
-            var gotmp1;
-            var gotmp2;
+            var go_tmp_1;
+            var go_tmp_2;
             var i;
             var j;
 
             for (i = this.enemies.length - 1; i >= 0; i--) {
-                gotmp1 = this.enemies[i];
-                if(!gotmp1.isActive) {
+                go_tmp_1 = this.enemies[i];
+                if(!go_tmp_1.isActive) {
                     continue;
                 }
                 for (j = i - 1; j >= 0; j--) {
-                    gotmp2 = this.enemies[j];
-                    if(!gotmp2.isActive) {
+                    go_tmp_2 = this.enemies[j];
+                    if(!go_tmp_2.isActive) {
                         continue;
                     }
-                    this.tmpVector.subVectors(gotmp2.position, gotmp1.position);
+                    this.tmpVector.subVectors(go_tmp_2.position, go_tmp_1.position);
                     var lenSq = this.tmpVector.lengthSq();
-                    if(lenSq < gotmp2.radius + gotmp1.radius) {
+                    if(lenSq < go_tmp_2.radius + go_tmp_1.radius) {
                         this.tmpVector.multiplyScalar( 3 / (lenSq + 1));
-                        gotmp2.velocity.add(this.tmpVector);
-                        gotmp1.velocity.sub(this.tmpVector);
+                        go_tmp_2.velocity.add(this.tmpVector);
+                        go_tmp_1.velocity.sub(this.tmpVector);
                     }
                 };
             };
 
             // bullet vs enemy
-            var bullet;
-            var enemy;
-            var w = this.playArea.width/2;
-            var h = this.playArea.height/2;
             
             for (i = this.bullets.length - 1; i >= 0; i--) {
-                bullet = this.bullets[i];
-                if(!bullet.isActive) {
+                go_tmp_1 = this.bullets[i];
+                if(!go_tmp_1.isActive) {
                     continue;
                 }
 
                 // bullet vs boundaries
-                if ( bullet.position.x < -w || bullet.position.y < -h || bullet.position.x > w || bullet.position.y > h ) {
-                    bullet.deactivate();
+                if ( this.playArea.isOut(go_tmp_1) ) {
+                    go_tmp_1.deactivate();
                 }
 
                 // bullet vs enemies
                 for (j = this.enemies.length - 1; j >= 0; j--) {
-                    enemy = this.enemies[j];
-                    if(!enemy.isActive) {
+                    go_tmp_2 = this.enemies[j];
+                    if(!go_tmp_2.isActive) {
                         continue;
                     }
-                    this.tmpVector.subVectors(enemy.position, bullet.position);
-                    if(this.tmpVector.lengthSq() < enemy.radius + bullet.radius) {
-                        bullet.deactivate();
-                        enemy.deactivate();
-                        this.spawnEnemy(enemy);
+                    this.tmpVector.subVectors(go_tmp_2.position, go_tmp_1.position);
+                    if(this.tmpVector.lengthSq() < go_tmp_2.radius + go_tmp_1.radius) {
+                        go_tmp_1.deactivate();
+                        go_tmp_2.deactivate();
+                        this.spawnEnemy(go_tmp_2);
                         break;
                     }
                 };
@@ -268,20 +249,32 @@ define(function (require) {
             //  enemy vs player
 
             for (i = this.enemies.length - 1; i >= 0; i--) {
-                gotmp1 = this.enemies[i];
-                if(!gotmp1.isActive) {
+                go_tmp_1 = this.enemies[i];
+                if(!go_tmp_1.isActive) {
                     continue;
                 }
                 for (j = this.players.length - 1; j >= 0; j--) {
-                    gotmp2 = this.players[j];
-                    if(!gotmp2.isActive) {
+                    go_tmp_2 = this.players[j];
+                    if(!go_tmp_2.isActive) {
                         continue;
                     }
-                    this.tmpVector.subVectors(gotmp2.position, gotmp1.position);
-                    if(this.tmpVector.lengthSq() < gotmp2.radius + gotmp1.radius) {
-                        // this.onPlayerDead(gotmp2);
-                        return;
+                    this.tmpVector.subVectors(go_tmp_2.position, go_tmp_1.position);
+                    if(this.tmpVector.lengthSq() < go_tmp_2.radius + go_tmp_1.radius) {
+                        // this.onPlayerDead(go_tmp_2);
+                        break;
                     }
+                };
+            };
+
+            // all with playArea
+            // 
+            for (i = this.gameObjects.length - 1; i >= 0; i--) {
+                for (j = this.gameObjects[i].length - 1; j >= 0; j--) {
+                    go_tmp_1 = this.gameObjects[i][j];
+                    if(!go_tmp_1.isActive) {
+                        continue;
+                    }
+                    go_tmp_1.position.clamp(this.playArea.vecMin, this.playArea.vecMax);
                 };
             };
         },
@@ -299,7 +292,6 @@ define(function (require) {
             enemy.activate();
         },
         render: function () {
-
             var i, j;
             for (i = this.gameObjects.length - 1; i >= 0; i--) {
                 for (j = this.gameObjects[i].length - 1; j >= 0; j--) {
