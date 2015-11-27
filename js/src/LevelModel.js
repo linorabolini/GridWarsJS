@@ -29,6 +29,7 @@ define(function (require) {
         scene: null,
         camera: null,
         renderer: null,
+        composer: null,
 
         tmpVector: null,
         
@@ -57,6 +58,9 @@ define(function (require) {
             // setup renderer
             this.setupRenderer();
 
+            // setup composer
+            this.setupComposer();
+
             // create bullets cache
             this.createBullets();
 
@@ -75,13 +79,14 @@ define(function (require) {
 
             // setup renderer
             if (window.WebGLRenderingContext)
-                this.renderer = new THREE.WebGLRenderer();
+                this.renderer = new THREE.WebGLRenderer( { precision: 'lowp', antialias: true } );
             else
                 this.renderer = new THREE.CanvasRenderer();
 
             this.renderer.setPixelRatio( window.devicePixelRatio );
-            this.renderer.setClearColor(0x00688B, 1);
+            this.renderer.setClearColor(0x000000, 1);
             this.renderer.setSize( window.innerWidth, window.innerHeight );
+            this.renderer.autoClear = false;
 
             window.onresize = function() {
                 var windowHalfX = window.innerWidth / 2;
@@ -91,7 +96,21 @@ define(function (require) {
                 scope.camera.updateProjectionMatrix();
 
                 scope.renderer.setSize( window.innerWidth, window.innerHeight );
+
+                scope.composer && scope.composer.reset();
             };
+        },
+        setupComposer: function () {
+            var renderModel = new THREE.RenderPass( this.scene, this.camera );
+            var effectBloom = new THREE.BloomPass( 2 );
+            var effectCopy = new THREE.ShaderPass(THREE.CopyShader);
+                effectCopy.renderToScreen = true;
+
+            this.composer = new THREE.EffectComposer( this.renderer );
+
+            this.composer.addPass( renderModel );
+            this.composer.addPass( effectBloom );
+            this.composer.addPass( effectCopy );
         },
         rotateCamera: function (axis, value) {
             // this.cameraHelper.rotateCamera(axis, value);
@@ -115,7 +134,7 @@ define(function (require) {
             var i;
             var enemy;
 
-            for (i = 50 - 1; i >= 0; i--) {
+            for (i = 200 - 1; i >= 0; i--) {
                 enemy = new GameObject([
                         new SpriteComponent(this.scene, "assets/images/Seeker.png"),
                         new FollowTargetsMover(7, this.players)
@@ -299,7 +318,8 @@ define(function (require) {
                 };
             };
 
-            this.renderer.render(this.scene, this.camera);
+            this.renderer.clear();
+            this.composer.render( 0.1 );
         },
         dispose: function () {
             this.removeFromScreen();
