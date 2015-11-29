@@ -6,6 +6,50 @@
        	<link rel="stylesheet" type="text/css" href="css/main.css">
        	<script src="https://cdn.socket.io/socket.io-1.2.1.js"></script>
 
+        <script type="x-shader/x-vertex" id="vertexshader">
+
+            attribute float size;
+            attribute vec3 customColor;
+            attribute float rotation;
+
+            varying vec3 vColor;
+            varying float vRotation;
+
+            void main() {
+
+              vColor = customColor;
+              vRotation = rotation;
+
+              vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+              gl_PointSize = size * ( 300.0 / length( mvPosition.xyz ) );
+
+              gl_Position = projectionMatrix * mvPosition;
+
+            }
+
+        </script>
+
+        <script type="x-shader/x-fragment" id="fragmentshader">
+
+          uniform vec3 color;
+          uniform sampler2D texture;
+
+          varying vec3 vColor;
+          varying float vRotation;
+
+          void main() {
+
+            float mid = 0.5;
+            vec2 rotated = vec2(cos(vRotation) * (gl_PointCoord.x - mid) + sin(vRotation) * (gl_PointCoord.y - mid) + mid,
+                                cos(vRotation) * (gl_PointCoord.y - mid) - sin(vRotation) * (gl_PointCoord.x - mid) + mid);
+            vec4 rotatedTexture = texture2D( texture,  rotated);
+            gl_FragColor = vec4( color * vColor, 1.0 ) * rotatedTexture;
+
+          }
+
+        </script>
+
 		    <!-- REQUIRE  -->
         <script data-main="js/main" src="js/libs/require.js"></script>
     </head>

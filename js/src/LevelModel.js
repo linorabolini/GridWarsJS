@@ -8,6 +8,7 @@ define(function (require) {
         GameObject                  = require('gameObject'),
         Weapon                      = require('weapon'),
         PlayArea                    = require('playArea'),
+        ParticleManager             = require('particleManager'),
         InventoryComponent          = require('inventoryComponent'),
         PlayerControllerComponent   = require('playerControllerComponent'),
         FollowTargetsMover          = require('followTargetsMover'),
@@ -30,6 +31,8 @@ define(function (require) {
         camera: null,
         renderer: null,
         composer: null,
+
+        particleManager: null,
 
         tmpVector: null,
         
@@ -64,6 +67,9 @@ define(function (require) {
             // create bullets cache
             this.createBullets();
 
+            // create particles cache
+            this.createParticleManager();
+
             // create bullets cache
             this.createEnemies();
         },
@@ -78,10 +84,7 @@ define(function (require) {
             var scope = this;
 
             // setup renderer
-            if (window.WebGLRenderingContext)
-                this.renderer = new THREE.WebGLRenderer( { precision: 'lowp', antialias: true } );
-            else
-                this.renderer = new THREE.CanvasRenderer();
+            this.renderer = new THREE.WebGLRenderer();
 
             this.renderer.setPixelRatio( window.devicePixelRatio );
             this.renderer.setClearColor(0x000000, 1);
@@ -102,7 +105,7 @@ define(function (require) {
         },
         setupComposer: function () {
             var renderModel = new THREE.RenderPass( this.scene, this.camera );
-            var effectBloom = new THREE.BloomPass( 2 );
+            var effectBloom = new THREE.BloomPass( 2.2, 25, 4.0, 256 );
             var effectCopy = new THREE.ShaderPass(THREE.CopyShader);
                 effectCopy.renderToScreen = true;
 
@@ -130,11 +133,15 @@ define(function (require) {
                 this.bullets.push(bullet);      
             };
         },
+        createParticleManager: function () {
+            this.particleManager = new ParticleManager(10000, this.playArea, this.scene);
+            this.addChild(this.particleManager);
+        },
         createEnemies: function () {
             var i;
             var enemy;
 
-            for (i = 200 - 1; i >= 0; i--) {
+            for (i = 20 - 1; i >= 0; i--) {
                 enemy = new GameObject([
                         new SpriteComponent(this.scene, "assets/images/Seeker.png"),
                         new FollowTargetsMover(7, this.players)
@@ -147,7 +154,7 @@ define(function (require) {
             for (i = 10 - 1; i >= 0; i--) {
                 enemy = new GameObject([
                         new SpriteComponent(this.scene, "assets/images/Pointer.png"),
-                        new RandomPointMover(7, this.playArea),
+                        new RandomPointMover(7, this.playArea, true),
                     ]);
 
                 this.spawnEnemy(enemy);

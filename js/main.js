@@ -24,6 +24,7 @@ require.config({
         'levelModel'        : 'src/LevelModel',
         'app'               : 'src/App',
         'gameObject'        : 'src/GameObject',
+        'particleManager'   : 'src/ParticleManager',
         'playArea'          : 'src/PlayArea',
         'weapon'            : 'src/Weapon',
             // components
