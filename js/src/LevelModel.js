@@ -134,14 +134,14 @@ define(function (require) {
             };
         },
         createParticleManager: function () {
-            this.particleManager = new ParticleManager(10000, this.playArea, this.scene);
+            this.particleManager = new ParticleManager(1000, this.playArea, this.scene);
             this.addChild(this.particleManager);
         },
         createEnemies: function () {
             var i;
             var enemy;
 
-            for (i = 20 - 1; i >= 0; i--) {
+            for (i = 200 - 1; i >= 0; i--) {
                 enemy = new GameObject([
                         new SpriteComponent(this.scene, "assets/images/Seeker.png"),
                         new FollowTargetsMover(7, this.players)
@@ -253,6 +253,7 @@ define(function (require) {
 
                 // bullet vs boundaries
                 if ( this.playArea.isOut(go_tmp_1) ) {
+                    this.particleManager.createBurst(go_tmp_1.position, 10, 10, 10);
                     go_tmp_1.deactivate();
                 }
 
@@ -264,6 +265,7 @@ define(function (require) {
                     }
                     this.tmpVector.subVectors(go_tmp_2.position, go_tmp_1.position);
                     if(this.tmpVector.lengthSq() < go_tmp_2.radius + go_tmp_1.radius) {
+                        this.particleManager.createBurst(go_tmp_2.position, 50, 20, 20);
                         go_tmp_1.deactivate();
                         go_tmp_2.deactivate();
                         this.spawnEnemy(go_tmp_2);

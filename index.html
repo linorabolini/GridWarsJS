@@ -11,14 +11,17 @@
             attribute float size;
             attribute vec3 customColor;
             attribute float rotation;
+            attribute float alpha;
 
             varying vec3 vColor;
             varying float vRotation;
+            varying float vAlpha;
 
             void main() {
 
               vColor = customColor;
               vRotation = rotation;
+              vAlpha = alpha;
 
               vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
 
@@ -37,6 +40,7 @@
 
           varying vec3 vColor;
           varying float vRotation;
+          varying float vAlpha;
 
           void main() {
 
@@ -44,7 +48,7 @@
             vec2 rotated = vec2(cos(vRotation) * (gl_PointCoord.x - mid) + sin(vRotation) * (gl_PointCoord.y - mid) + mid,
                                 cos(vRotation) * (gl_PointCoord.y - mid) - sin(vRotation) * (gl_PointCoord.x - mid) + mid);
             vec4 rotatedTexture = texture2D( texture,  rotated);
-            gl_FragColor = vec4( color * vColor, 1.0 ) * rotatedTexture;
+            gl_FragColor = vec4( color * vColor, vAlpha ) * rotatedTexture;
 
           }
 
