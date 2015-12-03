@@ -175,7 +175,7 @@ define(function (require) {
 
             var player = new GameObject([
                     new SpriteComponent(this.scene, "assets/images/Player.png"),
-                    new PlayerControllerComponent(controller, inventory),
+                    new PlayerControllerComponent(controller, inventory, this.particleManager),
                     inventory
                 ]);
 
@@ -253,7 +253,7 @@ define(function (require) {
 
                 // bullet vs boundaries
                 if ( this.playArea.isOut(go_tmp_1) ) {
-                    this.particleManager.createBurst(go_tmp_1.position, 10, 10, 10);
+                    this.particleManager.createExplosion(go_tmp_1.position, 10, 15, 10);
                     go_tmp_1.deactivate();
                 }
 
@@ -265,7 +265,7 @@ define(function (require) {
                     }
                     this.tmpVector.subVectors(go_tmp_2.position, go_tmp_1.position);
                     if(this.tmpVector.lengthSq() < go_tmp_2.radius + go_tmp_1.radius) {
-                        this.particleManager.createBurst(go_tmp_2.position, 50, 20, 20);
+                        this.particleManager.createExplosion(go_tmp_2.position, 50, 30, 20);
                         go_tmp_1.deactivate();
                         go_tmp_2.deactivate();
                         this.spawnEnemy(go_tmp_2);

@@ -2,10 +2,12 @@ define(function (require) {
 
     var THREE = require('three');
 
-    function PlayerController(controller, inventory) {
+    function PlayerController(controller, inventory, particleManager) {
         this.controller = controller;
         this.inventory = inventory;
         this.moveDirection = new THREE.Vector3(0,0,0);
+        this.particleDirection = new THREE.Vector3(0,0,0);
+        this.particleManager = particleManager;
 
         // TODO: move this to a mover
         this.speed = 10;
@@ -39,10 +41,14 @@ define(function (require) {
         var inputY = this.controller.get("87") - this.controller.get("83");
 
         // TODO: move this to a mover
-        this.moveDirection.set(inputX, inputY, 0).normalize().multiplyScalar(this.speed);
+        this.moveDirection.set(inputX, inputY, 0).setLength(this.speed);
 
-        // TODO: move this to a mover
-        go.velocity.add(this.moveDirection);
+        if(this.moveDirection.lengthSq() != 0) {
+            // TODO: move this to a mover
+            go.velocity.add(this.moveDirection);
+            this.particleDirection.copy(this.moveDirection).multiplyScalar(-1);
+            this.particleManager.createBurst(go.position, this.particleDirection, 5, 2, 3, 5);
+        }
     }
 
     PlayerController.prototype.updateRotation = function(go, delta) {

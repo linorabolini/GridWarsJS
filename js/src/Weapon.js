@@ -13,6 +13,8 @@ define(function (require) {
         ];
 
         this.tmpVector = new THREE.Vector3( 0, 0, 0 );
+        this.quaternion = new THREE.Quaternion();
+        this.UP = new THREE.Vector3( 0, 0, 1 );
     }
 
     Weapon.prototype.update = function (go, delta) {
@@ -43,11 +45,10 @@ define(function (require) {
         if(!this.canFire || !bullet)
             return
 
-        var quaternion = new THREE.Quaternion();
-        quaternion.setFromAxisAngle( new THREE.Vector3( 0, 0, 1 ), go.rotation );
+        this.quaternion.setFromAxisAngle( this.UP, go.rotation );
 
         this.tmpVector.copy(offset);
-        this.tmpVector.applyQuaternion(quaternion);
+        this.tmpVector.applyQuaternion(this.quaternion);
         
         bullet.position.copy(go.position);
         bullet.position.add(this.tmpVector);

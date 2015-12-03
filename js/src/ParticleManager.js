@@ -91,7 +91,7 @@ define(function (require) {
             this.playArea = null;
             this.__dispose();
         },
-        createBurst: function (position, qty, force, forceV) {
+        createExplosion: function (position, qty, force, forceV) {
             force = force || 20;
             forceV = forceV || 20;
             var count = qty;
@@ -104,6 +104,27 @@ define(function (require) {
 
                 particle.position.copy(position);
                 particle.velocity.set(Math.random() * 2 - 1, Math.random() * 2 - 1, 0);
+                particle.velocity.setLength(Math.random() * forceV + force);
+                particle.alpha = 1.0;
+            };
+        },
+        createBurst: function (position, direction, qty, force, forceV, spreadAmount) {
+            force = force || 20;
+            forceV = forceV || 20;
+            var count = qty;
+            while(count--) {
+                var particle = this.getParticle();
+                if(!particle) {
+                    console.warn("NO PARTICLE");
+                    return;
+                }
+
+                particle.position.copy(position);
+                particle.velocity.copy(direction);
+                if(spreadAmount) {
+                    tmpVector.set(Math.random() * 2 -1, Math.random() * 2 -1, 0).multiplyScalar(spreadAmount);
+                    particle.velocity.add(tmpVector);
+                }
                 particle.velocity.setLength(Math.random() * forceV + force);
                 particle.alpha = 1.0;
             };
@@ -161,8 +182,7 @@ define(function (require) {
 
                 positions[ i3 + 0 ] = particle.position.x;
                 positions[ i3 + 1 ] = particle.position.y;
-                // positions[ i3 + 2 ] = particle.position.z;
-
+                
                 colors[ i3 + 0 ] = particle.color.r;
                 colors[ i3 + 1 ] = particle.color.g;
                 colors[ i3 + 2 ] = particle.color.b;
