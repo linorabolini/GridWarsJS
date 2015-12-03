@@ -8,7 +8,7 @@ define(function (require) {
         this.position = new THREE.Vector3(0,0,0);
         this.velocity = new THREE.Vector3(0,0,0);
         this.rotation = 0.0;
-        this.size = 2.0;
+        this.size = 1.5;
         this.alpha = 1.0;
         this.color = color;
     }
@@ -59,9 +59,6 @@ define(function (require) {
                 particle.position.setX(this.playArea.getRandomXCoord());
                 particle.position.setY(this.playArea.getRandomYCoord());
 
-                particle.velocity.setX(this.playArea.getRandomXCoord());
-                particle.velocity.setY(this.playArea.getRandomYCoord());
-
                 this.particles.push(particle);
 
                 positions[ i3 + 0 ] = particle.position.x;
@@ -106,7 +103,7 @@ define(function (require) {
                 }
 
                 particle.position.copy(position);
-                particle.velocity.set(this.playArea.getRandomXCoord(), this.playArea.getRandomYCoord(), 0);
+                particle.velocity.set(Math.random() * 2 - 1, Math.random() * 2 - 1, 0);
                 particle.velocity.setLength(Math.random() * forceV + force);
                 particle.alpha = 1.0;
             };
@@ -134,13 +131,30 @@ define(function (require) {
 
                 particle = this.particles[i];
 
+                if(!particle.alpha) {
+                    continue;
+                }
+
                 tmpVector.set(0,0,0);
                 particle.velocity.multiplyScalar(0.9);
                 tmpVector.add(particle.velocity);
                 tmpVector.multiplyScalar(dt);
                 particle.rotation = Math.atan2(tmpVector.x, tmpVector.y) + Math.PI / 2;
                 particle.position.add(tmpVector);
-                particle.alpha = Math.min(2.0, particle.velocity.lengthSq());
+
+                particle.position.clamp(this.playArea.vecMin, this.playArea.vecMax);
+
+                    if (particle.position.x <= this.playArea.left || particle.position.x >= this.playArea.right) {
+                        var  vx = particle.velocity.x;
+                        particle.velocity.setX(-vx);
+                    }
+
+                    if (particle.position.y <= this.playArea.bottom || particle.position.y >= this.playArea.top) {
+                        var  vy = particle.velocity.y;
+                        particle.velocity.setY(-vy);
+                    }
+
+                particle.alpha = Math.min(2.0, particle.velocity.lengthSq() * 0.1);
                 if(particle.alpha < 0.05) {
                     particle.alpha = 0.0;
                 }
