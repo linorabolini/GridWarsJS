@@ -2,9 +2,10 @@ define(function (require){
 
     var THREE = require('three');
 
-    function RandomPointMover(speed, playArea) {
+    function RandomPointMover(speed, playArea, isInfinite) {
         this.speed = speed || 5;
         this.playArea = playArea;
+        this.isInfinite = isInfinite;
         this.moveDirection = new THREE.Vector3(0,0,0);
         this.currentTarget = new THREE.Vector3(0,0,0);
     };
@@ -17,7 +18,11 @@ define(function (require){
         go.rotation = Math.atan2(this.moveDirection.y, this.moveDirection.x);
         
         if(go.position.distanceToSquared(this.currentTarget) < this.speed) {
-            this.updateTargetPoint(go);
+            if(this.isInfinite) {
+                this.updateTargetPoint(go);
+            } else {
+                go.deactivate();
+            }
         }
     }
     RandomPointMover.prototype.dispose = function (go) { }

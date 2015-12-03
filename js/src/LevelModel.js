@@ -8,6 +8,7 @@ define(function (require) {
         GameObject                  = require('gameObject'),
         Weapon                      = require('weapon'),
         PlayArea                    = require('playArea'),
+        ParticleManager             = require('particleManager'),
         InventoryComponent          = require('inventoryComponent'),
         PlayerControllerComponent   = require('playerControllerComponent'),
         FollowTargetsMover          = require('followTargetsMover'),
@@ -29,6 +30,9 @@ define(function (require) {
         scene: null,
         camera: null,
         renderer: null,
+        composer: null,
+
+        particleManager: null,
 
         tmpVector: null,
         
@@ -57,8 +61,14 @@ define(function (require) {
             // setup renderer
             this.setupRenderer();
 
+            // setup composer
+            this.setupComposer();
+
             // create bullets cache
             this.createBullets();
+
+            // create particles cache
+            this.createParticleManager();
 
             // create bullets cache
             this.createEnemies();
@@ -74,14 +84,12 @@ define(function (require) {
             var scope = this;
 
             // setup renderer
-            if (window.WebGLRenderingContext)
-                this.renderer = new THREE.WebGLRenderer();
-            else
-                this.renderer = new THREE.CanvasRenderer();
+            this.renderer = new THREE.WebGLRenderer();
 
             this.renderer.setPixelRatio( window.devicePixelRatio );
-            this.renderer.setClearColor(0x00688B, 1);
+            this.renderer.setClearColor(0x000000, 1);
             this.renderer.setSize( window.innerWidth, window.innerHeight );
+            this.renderer.autoClear = false;
 
             window.onresize = function() {
                 var windowHalfX = window.innerWidth / 2;
@@ -91,7 +99,21 @@ define(function (require) {
                 scope.camera.updateProjectionMatrix();
 
                 scope.renderer.setSize( window.innerWidth, window.innerHeight );
+
+                scope.composer && scope.composer.reset();
             };
+        },
+        setupComposer: function () {
+            var renderModel = new THREE.RenderPass( this.scene, this.camera );
+            var effectBloom = new THREE.BloomPass( 2.2, 25, 4.0, 256 );
+            var effectCopy = new THREE.ShaderPass(THREE.CopyShader);
+                effectCopy.renderToScreen = true;
+
+            this.composer = new THREE.EffectComposer( this.renderer );
+
+            this.composer.addPass( renderModel );
+            this.composer.addPass( effectBloom );
+            this.composer.addPass( effectCopy );
         },
         rotateCamera: function (axis, value) {
             // this.cameraHelper.rotateCamera(axis, value);
@@ -111,11 +133,15 @@ define(function (require) {
                 this.bullets.push(bullet);      
             };
         },
+        createParticleManager: function () {
+            this.particleManager = new ParticleManager(1000, this.playArea, this.scene);
+            this.addChild(this.particleManager);
+        },
         createEnemies: function () {
             var i;
             var enemy;
 
-            for (i = 50 - 1; i >= 0; i--) {
+            for (i = 200 - 1; i >= 0; i--) {
                 enemy = new GameObject([
                         new SpriteComponent(this.scene, "assets/images/Seeker.png"),
                         new FollowTargetsMover(7, this.players)
@@ -128,7 +154,7 @@ define(function (require) {
             for (i = 10 - 1; i >= 0; i--) {
                 enemy = new GameObject([
                         new SpriteComponent(this.scene, "assets/images/Pointer.png"),
-                        new RandomPointMover(7, this.playArea),
+                        new RandomPointMover(7, this.playArea, true),
                     ]);
 
                 this.spawnEnemy(enemy);
@@ -227,6 +253,7 @@ define(function (require) {
 
                 // bullet vs boundaries
                 if ( this.playArea.isOut(go_tmp_1) ) {
+                    this.particleManager.createBurst(go_tmp_1.position, 10, 10, 10);
                     go_tmp_1.deactivate();
                 }
 
@@ -238,6 +265,7 @@ define(function (require) {
                     }
                     this.tmpVector.subVectors(go_tmp_2.position, go_tmp_1.position);
                     if(this.tmpVector.lengthSq() < go_tmp_2.radius + go_tmp_1.radius) {
+                        this.particleManager.createBurst(go_tmp_2.position, 50, 20, 20);
                         go_tmp_1.deactivate();
                         go_tmp_2.deactivate();
                         this.spawnEnemy(go_tmp_2);
@@ -299,7 +327,8 @@ define(function (require) {
                 };
             };
 
-            this.renderer.render(this.scene, this.camera);
+            this.renderer.clear();
+            this.composer.render( 0.1 );
         },
         dispose: function () {
             this.removeFromScreen();
