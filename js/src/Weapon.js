@@ -47,11 +47,12 @@ define(function (require) {
 
         this.quaternion.setFromAxisAngle( this.UP, go.rotation );
 
-        this.tmpVector.copy(offset);
-        this.tmpVector.applyQuaternion(this.quaternion);
+        this.tmpVector.copy(offset)
+            .applyQuaternion(this.quaternion);
         
-        bullet.position.copy(go.position);
-        bullet.position.add(this.tmpVector);
+        bullet.position.copy(go.position)
+            .add(this.tmpVector);
+
         bullet.rotation = go.rotation;
         bullet.activate();
         this.elapsed = 0;

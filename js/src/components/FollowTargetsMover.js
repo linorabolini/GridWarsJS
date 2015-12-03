@@ -19,12 +19,11 @@ define(function (require){
         if(!this.currentTarget)
             return
 
-        this.moveDirection.copy(go.position);
-        this.moveDirection.negate();
-        this.moveDirection.add(this.currentTarget.position);
-        this.moveDirection.normalize();
+        this.moveDirection.copy(this.currentTarget.position)
+            .sub(go.position)
+            .setLength(this.speed * delta);
 
-        go.position.add(this.moveDirection.multiplyScalar(this.speed * delta));
+        go.position.add(this.moveDirection);
         go.rotation = Math.atan2(this.moveDirection.y, this.moveDirection.x);
     }
     FollowTargetsMover.prototype.dispose = function (go) { }

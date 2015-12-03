@@ -121,10 +121,12 @@ define(function (require) {
 
                 particle.position.copy(position);
                 particle.velocity.copy(direction);
+
                 if(spreadAmount) {
                     tmpVector.set(Math.random() * 2 -1, Math.random() * 2 -1, 0).multiplyScalar(spreadAmount);
                     particle.velocity.add(tmpVector);
                 }
+                
                 particle.velocity.setLength(Math.random() * forceV + force);
                 particle.alpha = 1.0;
             };
@@ -142,11 +144,11 @@ define(function (require) {
             this.__update(dt);
 
             var positions = this.particleSystem.geometry.attributes.position.array;
-            var sizes = this.particleSystem.geometry.attributes.size.array;
+            var sizes     = this.particleSystem.geometry.attributes.size.array;
             var rotations = this.particleSystem.geometry.attributes.rotation.array;
-            var alphas = this.particleSystem.geometry.attributes.alpha.array;
-            var colors = this.particleSystem.geometry.attributes.customColor.array;
-            var particle = null;
+            var alphas    = this.particleSystem.geometry.attributes.alpha.array;
+            var colors    = this.particleSystem.geometry.attributes.customColor.array;
+            var particle  = null;
 
             for ( var i = 0, i3 = 0; i < this.particleCount; i ++, i3 += 3 ) {
 
@@ -156,14 +158,14 @@ define(function (require) {
                     continue;
                 }
 
-                tmpVector.set(0,0,0);
                 particle.velocity.multiplyScalar(0.9);
-                tmpVector.add(particle.velocity);
-                tmpVector.multiplyScalar(dt);
-                particle.rotation = Math.atan2(tmpVector.x, tmpVector.y) + Math.PI / 2;
-                particle.position.add(tmpVector);
 
-                particle.position.clamp(this.playArea.vecMin, this.playArea.vecMax);
+                tmpVector.set(0,0,0)
+                    .add(particle.velocity)
+                    .multiplyScalar(dt);
+
+                particle.position.add(tmpVector)
+                    .clamp(this.playArea.vecMin, this.playArea.vecMax);
 
                     if (particle.position.x <= this.playArea.left || particle.position.x >= this.playArea.right) {
                         var  vx = particle.velocity.x;
@@ -175,7 +177,9 @@ define(function (require) {
                         particle.velocity.setY(-vy);
                     }
 
+                particle.rotation = Math.atan2(tmpVector.x, tmpVector.y) + Math.PI / 2;
                 particle.alpha = Math.min(2.0, particle.velocity.lengthSq() * 0.1);
+
                 if(particle.alpha < 0.05) {
                     particle.alpha = 0.0;
                 }
