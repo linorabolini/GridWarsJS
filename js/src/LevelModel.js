@@ -9,6 +9,7 @@ define(function (require) {
         Weapon                      = require('weapon'),
         PlayArea                    = require('playArea'),
         ParticleManager             = require('particleManager'),
+        PointField                  = require('pointField'),
         InventoryComponent          = require('inventoryComponent'),
         PlayerControllerComponent   = require('playerControllerComponent'),
         FollowTargetsMover          = require('followTargetsMover'),
@@ -33,6 +34,7 @@ define(function (require) {
         composer: null,
 
         particleManager: null,
+        pointField: null,
 
         tmpVector: null,
         
@@ -53,7 +55,6 @@ define(function (require) {
 
             // play Area
             this.playArea = new PlayArea(60, 30);
-            this.scene.add( this.playArea.scene );
 
             // camera
             this.setupCamera();
@@ -66,6 +67,9 @@ define(function (require) {
 
             // create bullets cache
             this.createBullets();
+
+            // point field
+            this.createPointField();
 
             // create particles cache
             this.createParticleManager();
@@ -137,6 +141,9 @@ define(function (require) {
             this.particleManager = new ParticleManager(1000, this.playArea, this.scene);
             this.addChild(this.particleManager);
         },
+        createPointField: function () {
+            this.pointField = new PointField(this.playArea, this.scene, 40, 20);
+        },
         createEnemies: function () {
             var i;
             var enemy;
@@ -206,13 +213,17 @@ define(function (require) {
                 };
             };
 
+            this.pointField.update(dt);
+
             this.checkCollisions(dt);
 
             for (i = this.gameObjects.length - 1; i >= 0; i--) {
                 for (j = this.gameObjects[i].length - 1; j >= 0; j--) {
-                    this.gameObjects[i][j].posUpdate(dt);
+                    this.gameObjects[i][j].postUpdate(dt);
                 };
             };
+
+            this.pointField.postUpdate(dt);
 
             this.render();
         },
@@ -254,6 +265,7 @@ define(function (require) {
                 // bullet vs boundaries
                 if ( this.playArea.isOut(go_tmp_1) ) {
                     this.particleManager.createExplosion(go_tmp_1.position, 10, 15, 10);
+                    this.pointField.createExplosion(go_tmp_1.position, 10);
                     go_tmp_1.deactivate();
                 }
 
@@ -266,6 +278,7 @@ define(function (require) {
                     this.tmpVector.subVectors(go_tmp_2.position, go_tmp_1.position);
                     if(this.tmpVector.lengthSq() < go_tmp_2.radius + go_tmp_1.radius) {
                         this.particleManager.createExplosion(go_tmp_2.position, 50, 30, 20);
+                        this.pointField.createExplosion(go_tmp_2.position, 100);
                         go_tmp_1.deactivate();
                         go_tmp_2.deactivate();
                         this.spawnEnemy(go_tmp_2);
@@ -332,9 +345,12 @@ define(function (require) {
         },
         dispose: function () {
             this.removeFromScreen();
-            window.onresize = null;
-            players = null;
-            bullets = null;
+            window.onresize  = null;
+            this.players     = null;
+            this.bullets     = null;
+            this.enemies     = null;
+            this.gameObjects = null;
+            this.pointField.dispose();
             this.__dispose();
         }
     });

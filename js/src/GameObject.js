@@ -32,7 +32,7 @@ define(function (require) {
 
             this.__update(delta);
         },
-        posUpdate: function (delta) {
+        postUpdate: function (delta) {
             this.velocity.multiplyScalar(delta);
             this.position.add(this.velocity);
         }

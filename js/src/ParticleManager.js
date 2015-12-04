@@ -13,7 +13,7 @@ define(function (require) {
         this.color = color;
     }
 
-    tmpVector = new THREE.Vector3(0,0,0);
+    var tmpVector = new THREE.Vector3(0,0,0);
 
     return Entity.extend({
         init: function (particleCount, playArea, scene) {
@@ -126,7 +126,7 @@ define(function (require) {
                     tmpVector.set(Math.random() * 2 -1, Math.random() * 2 -1, 0).multiplyScalar(spreadAmount);
                     particle.velocity.add(tmpVector);
                 }
-                
+
                 particle.velocity.setLength(Math.random() * forceV + force);
                 particle.alpha = 1.0;
             };

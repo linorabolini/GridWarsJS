@@ -25,6 +25,7 @@ require.config({
         'app'               : 'src/App',
         'gameObject'        : 'src/GameObject',
         'particleManager'   : 'src/ParticleManager',
+        'pointField'        : 'src/PointField',
         'playArea'          : 'src/PlayArea',
         'weapon'            : 'src/Weapon',
             // components
