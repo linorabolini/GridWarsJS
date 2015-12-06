@@ -142,7 +142,7 @@ define(function (require) {
             this.addChild(this.particleManager);
         },
         createPointField: function () {
-            this.pointField = new PointField(this.playArea, this.scene, 40, 20);
+            this.pointField = new PointField(this.playArea, this.scene, 80, 40);
         },
         createEnemies: function () {
             var i;

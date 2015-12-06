@@ -34,7 +34,8 @@ define(function (require) {
         },
         createNet: function (rows, cols) {
             var material = new THREE.LineBasicMaterial({
-                color: 0x66ff00
+                color: 0x006600,
+                linewidth: 1
             });
 
             geometry = new THREE.Geometry();
@@ -81,8 +82,9 @@ define(function (require) {
         createExplosion: function (position, force) {
             force = force || 20;
             
-            for (i = 0; i <= this.rows; i++) {
-                for (j = 0; j <= this.cols; j++) {
+            // starts from 1 to avoid borders
+            for (i = 1; i < this.rows; i++) {
+                for (j = 1; j < this.cols; j++) {
                     var point = this.points[i][j];
 
                     tmpVector.subVectors(point.position, position)
