@@ -3,12 +3,16 @@ define(function (require) {
 
     var utils = require('utils');
 
-    function KeyboardController () {
+    function KeyboardController (keyMap) {
+        // generate a keymap to change controllers
+        this.keyMap = keyMap || {};
+
         // generate a unique id for this input source
         this.id = "keyboard" + utils.guid();
     };
 
     KeyboardController.prototype.configure = function (input, id) {
+        var scope = this;
 
         //store the internal source id 
         this.internalSourceId = id;
@@ -23,7 +27,7 @@ define(function (require) {
             var data = { 
                 id: id,
                 value: event.type === "keydown" ? 1 : 0,
-                code: event.keyCode,
+                code: scope.keyMap[event.keyCode],
                 type: "key"
             };
 

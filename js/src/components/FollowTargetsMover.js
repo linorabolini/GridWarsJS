@@ -14,7 +14,7 @@ define(function (require){
 
     }
     FollowTargetsMover.prototype.update = function (go, delta) {
-        this.currentTarget = this.getTarget();
+        this.currentTarget = this.getTarget(go);
 
         if(!this.currentTarget)
             return
@@ -31,12 +31,21 @@ define(function (require){
     FollowTargetsMover.prototype.deactivate = function (go) { }
     FollowTargetsMover.prototype.render = function (go) { }
 
-    FollowTargetsMover.prototype.getTarget = function () {
+    FollowTargetsMover.prototype.getTarget = function (go) {
+
+        var maxDistance = 99999, target, tmpDistance, tmpTarget;
+
         // TODO make more smart zombies
-        if(this.targets.length)
-            return this.targets[0]; // player 2 will have fun.
-        else
-            return null
+        for (var i = 0; i < this.targets.length; i++) {
+            tmpTarget = this.targets[i];
+            tmpDistance = tmpTarget.position.distanceToSquared(go.position);
+            if (tmpDistance < maxDistance) {
+                maxDistance = tmpDistance;
+                target = tmpTarget;
+            }
+        };
+
+        return target;
     }
 
     return FollowTargetsMover;

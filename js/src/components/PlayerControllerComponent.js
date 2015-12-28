@@ -37,8 +37,8 @@ define(function (require) {
     }
 
     PlayerController.prototype.updatePosition = function(go, delta) {
-        var inputX = this.controller.get("68") - this.controller.get("65");
-        var inputY = this.controller.get("87") - this.controller.get("83");
+        var inputX = this.controller.get("ARROW_RIGHT") - this.controller.get("ARROW_LEFT");
+        var inputY = this.controller.get("ARROW_UP") - this.controller.get("ARROW_DOWN");
 
         // TODO: move this to a mover
         this.moveDirection.set(inputX, inputY, 0).setLength(this.speed);
@@ -64,7 +64,7 @@ define(function (require) {
     }
 
     PlayerController.prototype.updateInventory = function(go, delta) {
-        var input = this.controller.get(this.controller.BUTTON_A);
+        var input = this.controller.get('BUTTON_A');
         if(input == this.controller.TRUE) {
             this.inventory.selectedItem.doUseBy(go);
         }

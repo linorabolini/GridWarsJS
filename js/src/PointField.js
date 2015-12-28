@@ -34,8 +34,9 @@ define(function (require) {
         },
         createNet: function (rows, cols) {
             var material = new THREE.LineBasicMaterial({
-                color: 0x006600,
-                linewidth: 1
+                color: 0x003300,
+                linewidth: 1,
+                blending:       THREE.AdditiveBlending
             });
 
             geometry = new THREE.Geometry();

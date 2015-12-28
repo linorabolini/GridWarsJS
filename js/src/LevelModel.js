@@ -27,7 +27,6 @@ define(function (require) {
         enemies: null,
         bullets: null,
         gameObjects: null,
-        controllers: null,
         scene: null,
         camera: null,
         renderer: null,
@@ -148,7 +147,7 @@ define(function (require) {
             var i;
             var enemy;
 
-            for (i = 200 - 1; i >= 0; i--) {
+            for (i = 10 - 1; i >= 0; i--) {
                 enemy = new GameObject([
                         new SpriteComponent(this.scene, "assets/images/Seeker.png"),
                         new FollowTargetsMover(7, this.players)
@@ -174,7 +173,7 @@ define(function (require) {
             }, this);
         },
         addPlayer: function (config) {
-            var controller = new Controller();
+            var controller = new Controller(config.keyMap);
             var weapon = new Weapon(this.bullets);
 
             var inventory = new InventoryComponent();
