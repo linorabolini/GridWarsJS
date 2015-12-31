@@ -38,7 +38,10 @@ define(function (require) {
                 '68': 'ARROW_RIGHT',
                 '83': 'ARROW_DOWN',
                 '87': 'ARROW_UP',
-                '71': 'BUTTON_A'
+                '71': 'ARROW_2_DOWN',
+                '70': 'ARROW_2_LEFT',
+                '72': 'ARROW_2_RIGHT',
+                '84': 'ARROW_2_UP'
             }));
         },
         startApp: function () {

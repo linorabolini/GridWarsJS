@@ -58,5 +58,9 @@ define(function (require) {
         return  (1 - c) * a + b * c;
     }
 
+    utils.map = function (value, istart, istop, ostart, ostop) {
+        return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
+    }
+
     return utils;
 });

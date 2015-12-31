@@ -45,7 +45,7 @@ define(function (require) {
         if(!this.canFire || !bullet)
             return
 
-        this.quaternion.setFromAxisAngle( this.UP, go.rotation );
+        this.quaternion.setFromAxisAngle( this.UP, go.shootDirection );
 
         this.tmpVector.copy(offset)
             .applyQuaternion(this.quaternion);
@@ -53,7 +53,7 @@ define(function (require) {
         bullet.position.copy(go.position)
             .add(this.tmpVector);
 
-        bullet.rotation = go.rotation;
+        bullet.rotation = go.shootDirection;
         bullet.activate();
         this.elapsed = 0;
     }

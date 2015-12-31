@@ -11,6 +11,7 @@ define(function (require) {
         position: null,
         velocity: null,
         rotation: null,
+        shootDirection: null,
         radius: null,
         
 

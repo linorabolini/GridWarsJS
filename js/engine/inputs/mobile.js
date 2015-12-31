@@ -10,14 +10,17 @@ define(function (require) {
         // stores the 
         this.internalSourceId = id;
 
-        this.emit = function (msg) {
+        this.emit = function (data) {
 
             // remaps the message id as the 
             // source id
-            msg.id = this.internalSourceId;
+            var message = {
+                id: this.internalSourceId,
+                data: data
+            }
 
             // triggers that an input has arrived
-            input.trigger("input", msg);
+            input.trigger("input", message);
 
         };
 

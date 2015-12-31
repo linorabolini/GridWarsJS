@@ -123,7 +123,10 @@ define(function (require) {
         },
         handleInput: function (event) {
             var controller = this.getPlayerById(event.id).controller;
-            controller.set(event.code, event.value);
+            _.each(event.data, function(item, key, data) {
+                controller.set(key, data[key]);
+            })
+            
         },
         createBullets: function () {
             for (var i = 100 - 1; i >= 0; i--) {

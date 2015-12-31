@@ -82,6 +82,8 @@ define(function (require) {
         },
         createExplosion: function (position, force) {
             force = force || 20;
+
+            position.setZ(-1);
             
             // starts from 1 to avoid borders
             for (i = 1; i < this.rows; i++) {

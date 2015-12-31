@@ -2,6 +2,7 @@ define(function (require) {
     'use strict';
 
     var utils = require('utils');
+    var _     = require('underscore');
 
     function KeyboardController (keyMap) {
         // generate a keymap to change controllers
@@ -24,14 +25,21 @@ define(function (require) {
                 return;
             }
 
-            var data = { 
+            var key = scope.keyMap[event.keyCode];
+
+            if(_.isUndefined(key)) {
+                return;
+            }
+
+            var data = {};
+            data[key] = event.type === "keydown" ? 1 : 0;
+
+            var message = { 
                 id: id,
-                value: event.type === "keydown" ? 1 : 0,
-                code: scope.keyMap[event.keyCode],
-                type: "key"
+                data: data
             };
 
-            input.trigger("input", data);
+            input.trigger("input", message);
         }
 
         window.addEventListener("keydown", keyEvent);
