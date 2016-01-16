@@ -13,6 +13,7 @@ define(function (require) {
         InventoryComponent          = require('inventoryComponent'),
         PlayerControllerComponent   = require('playerControllerComponent'),
         FollowTargetsMover          = require('followTargetsMover'),
+        LinkedTargetMover           = require('linkedTargetMover'),
         RandomPointMover            = require('randomPointMover'),
         SpriteComponent             = require('spriteComponent'),
         SimpleMover                 = require('simpleMover'),
@@ -162,12 +163,43 @@ define(function (require) {
 
             for (i = 10 - 1; i >= 0; i--) {
                 enemy = new GameObject([
-                        new SpriteComponent(this.scene, "assets/images/Pointer.png"),
+                        new SpriteComponent(this.scene, "assets/images/Wanderer.png"),
                         new RandomPointMover(7, this.playArea, true),
                     ]);
 
                 this.spawnEnemy(enemy);
                 this.enemies.push(enemy);
+            };
+
+            var j, nodes;
+
+            for (i = 2 - 1; i >= 0; i--) {
+
+                nodes = [];
+                enemy = new GameObject([
+                        new SpriteComponent(this.scene, "assets/images/Pointer.png"),
+                        new RandomPointMover(4, this.playArea, true),
+                    ]);
+
+                this.spawnEnemy(enemy);
+                this.enemies.push(enemy);
+
+                nodes.push(enemy);
+
+                for (j = 1; j <= 50; j++) {
+
+                    enemy = new GameObject([
+                            new SpriteComponent(this.scene, "assets/images/Seeker.png"),
+                            new LinkedTargetMover(nodes, j-1),
+                        ]);
+
+                    enemy.isCollisionable = false;
+
+                    nodes[j] = enemy;
+
+                    this.spawnEnemy(enemy);
+                    this.enemies.push(enemy);
+                }
             };
         },
         addPlayers: function (inputSources) {
@@ -238,12 +270,12 @@ define(function (require) {
 
             for (i = this.enemies.length - 1; i >= 0; i--) {
                 go_tmp_1 = this.enemies[i];
-                if(!go_tmp_1.isActive) {
+                if(!go_tmp_1.isActive || !go_tmp_1.isCollisionable) {
                     continue;
                 }
                 for (j = i - 1; j >= 0; j--) {
                     go_tmp_2 = this.enemies[j];
-                    if(!go_tmp_2.isActive) {
+                    if(!go_tmp_2.isActive || !go_tmp_2.isCollisionable) {
                         continue;
                     }
                     this.tmpVector.subVectors(go_tmp_2.position, go_tmp_1.position);
@@ -283,7 +315,7 @@ define(function (require) {
                         this.pointField.createExplosion(go_tmp_2.position, 100);
                         go_tmp_1.deactivate();
                         go_tmp_2.deactivate();
-                        this.spawnEnemy(go_tmp_2);
+                        // this.spawnEnemy(go_tmp_2);
                         break;
                     }
                 };

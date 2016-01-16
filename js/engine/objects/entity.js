@@ -1,8 +1,7 @@
 define(function (require) {
     'use strict';
 
-    var fishbone = require('fishbone'),
-        THREE    = require('three');
+    var fishbone = require('fishbone');
 
     return fishbone({
 
@@ -29,6 +28,8 @@ define(function (require) {
                 return;
             }
 
+            this.isDisposed = true;
+
             for (i = this.children.length - 1; i >= 0; i--) {
                 this.children[i].dispose();
             }
@@ -42,8 +43,6 @@ define(function (require) {
             this.components = [];
 
             this.parent && this.parent.removeChild(this);
-
-            this.isDisposed = true;
         },
         update: function (dt) {
             var i;
@@ -92,6 +91,10 @@ define(function (require) {
             for (i = this.components.length - 1; i >= 0; i--) {
                 this.components[i].activate(this);
             }
+
+            for (i = this.children.length - 1; i >= 0; i--) {
+                this.children[i].activate();
+            }
         },
         deactivate: function ()
         {
@@ -99,6 +102,10 @@ define(function (require) {
             this.isActive = false;
             for (i = this.components.length - 1; i >= 0; i--) {
                 this.components[i].deactivate(this);
+            }
+
+            for (i = this.children.length - 1; i >= 0; i--) {
+                this.children[i].deactivate();
             }
         },
         addComponents: function (components)

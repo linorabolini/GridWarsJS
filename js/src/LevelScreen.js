@@ -29,20 +29,6 @@ define(function (require) {
             input.on('new source', this.level.addPlayer);
         },
         handleInput: function (event) {
-            // if (event.type === "key") {
-            //     switch (event.code) {
-            //     case 87: // W
-            //         this.level.rotateCamera("z", event.value);
-            //         break;
-            //     case 83: // S
-            //         this.level.rotateCamera("y", event.value);
-            //         break;
-            //     case 65: // A
-            //         this.level.rotateCamera("x", event.value);
-            //         break;
-            //     }
-            // }
-
             // delegate to level model
             this.level.handleInput(event);
         }

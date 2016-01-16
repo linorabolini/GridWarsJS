@@ -30,6 +30,7 @@ require.config({
         'weapon'            : 'src/Weapon',
             // components
             'followTargetsMover'            : 'src/components/FollowTargetsMover',
+            'linkedTargetMover'             : 'src/components/LinkedTargetMover',
             'randomPointMover'              : 'src/components/RandomPointMover',
             'inventoryComponent'            : 'src/components/InventoryComponent',
             'simpleMover'                   : 'src/components/SimpleMover',
