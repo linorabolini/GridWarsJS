@@ -4,7 +4,7 @@ define(function (require){
 
 
     function SimpleMover(speed) {
-        this.speed = speed || 40;
+        this.speed = speed || 20;
         this.moveDirection = new THREE.Vector3(0,0,0);
     };
 

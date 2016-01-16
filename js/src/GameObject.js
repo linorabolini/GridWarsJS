@@ -4,38 +4,30 @@ define(function (require) {
     var Entity = require('entity'),
         THREE  = require('three');
 
-    return Entity.extend({
+    function GameObject (components, radius) {
+        this.position = new THREE.Vector3(0, 0, 0);
+        this.velocity = new THREE.Vector3(0, 0, 0);
+        this.rotation = 0;
+        this.radius = radius || 0.5;
+        this.shootDirection = null;
 
-        // variables
+        Entity.call(this, components);
+    }
 
-        position: null,
-        velocity: null,
-        rotation: null,
-        shootDirection: null,
-        radius: null,
-        
+    GameObject.prototype = new Entity();
 
-        // functions
+    GameObject.prototype.update = function(delta) {
+        this.velocity.set(0, 0, 0);
 
-        init: function (components, radius) {
-            this.position = new THREE.Vector3(0, 0, 0);
-            this.velocity = new THREE.Vector3(0, 0, 0);
-            this.rotation = 0;
-            this.radius = radius || 0.5;
-            if(!radius) {
-                console.warn("No Radius was set!");
-            }
+        Entity.prototype.update.call(this, delta);
+    };
 
-            this.__init(components);
-        },
-        update: function (delta) {
-            this.velocity.set(0, 0, 0);
+    GameObject.prototype.lateUpdate = function(delta) {
+        this.velocity.multiplyScalar(delta);
+        this.position.add(this.velocity);
 
-            this.__update(delta);
-        },
-        postUpdate: function (delta) {
-            this.velocity.multiplyScalar(delta);
-            this.position.add(this.velocity);
-        }
-    });
+        Entity.prototype.lateUpdate.call(this, delta);
+    };
+
+    return GameObject;
 });

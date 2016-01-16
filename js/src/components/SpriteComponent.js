@@ -28,7 +28,6 @@ define(function (require) {
     }
     SpriteComponent.prototype.update = function (go, delta) { }
     SpriteComponent.prototype.dispose = function (go) {
-        debugger;
         this.sprite.visible = false;
     }
 

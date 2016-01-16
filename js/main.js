@@ -21,7 +21,6 @@ require.config({
 
     // src
         'levelScreen'       : 'src/LevelScreen',
-        'levelModel'        : 'src/LevelModel',
         'app'               : 'src/App',
         'gameObject'        : 'src/GameObject',
         'particleManager'   : 'src/ParticleManager',
@@ -80,8 +79,10 @@ require(['app', 'datgui'],
         var last = 0;
         var dt = 0;
         function step(now) {
-            dt = Math.min(now - last, 100);
-            app.update(dt * 0.001);
+            dt = Math.min(now - last, 100) * 0.001;
+            app.update(dt);
+            app.lateUpdate(dt);
+            app.render();
             last = now;
             window.requestAnimationFrame(step);
         }
