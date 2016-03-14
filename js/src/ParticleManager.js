@@ -8,7 +8,7 @@ define(function (require) {
         this.position = new THREE.Vector3(0,0,0);
         this.velocity = new THREE.Vector3(0,0,0);
         this.rotation = 0.0;
-        this.size = 1.5;
+        this.size = 2.0;
         this.alpha = 1.0;
         this.color = color;
     }

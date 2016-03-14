@@ -85,7 +85,7 @@ define(function (require) {
         // setup renderer
         this.renderer = new THREE.WebGLRenderer();
 
-        this.renderer.setPixelRatio( window.devicePixelRatio );
+        this.renderer.setPixelRatio( window.devicePixelRatio || 1 );
         this.renderer.setClearColor(0x000000, 1);
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.autoClear = false;
@@ -183,7 +183,7 @@ define(function (require) {
             nodes = [];
             enemy = new GameObject([
                     new SpriteComponent(this.scene, "assets/images/Pointer.png"),
-                    new RandomPointMover(4, this.playArea, true),
+                    new FollowTargetsMover(7, this.players)
                 ]);
 
             this.spawnEnemy(enemy);
@@ -192,7 +192,7 @@ define(function (require) {
 
             nodes.push(enemy);
 
-            for (j = 1; j <= 50; j++) {
+            for (j = 1; j <= 20; j++) {
 
                 enemy = new GameObject([
                         new SpriteComponent(this.scene, "assets/images/Seeker.png"),

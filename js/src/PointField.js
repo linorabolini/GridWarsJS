@@ -40,7 +40,7 @@ define(function (require) {
         var material = new THREE.LineBasicMaterial({
             color: 0x003300,
             linewidth: 1,
-            blending:       THREE.AdditiveBlending
+            blending: THREE.AdditiveBlending
         });
 
         geometry = new THREE.Geometry();

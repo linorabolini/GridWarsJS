@@ -22,13 +22,13 @@ define(function (require) {
         this.startApp();
 
         // add keyboard source
-        input.addSource(new KeyboardController({
-            '74': 'ARROW_LEFT',
-            '76': 'ARROW_RIGHT',
-            '75': 'ARROW_DOWN',
-            '73': 'ARROW_UP',
-            '80': 'BUTTON_A'
-        }));
+        // input.addSource(new KeyboardController({
+        //     '74': 'ARROW_LEFT',
+        //     '76': 'ARROW_RIGHT',
+        //     '75': 'ARROW_DOWN',
+        //     '73': 'ARROW_UP',
+        //     '80': 'BUTTON_A'
+        // }));
 
         // add keyboard source
         input.addSource(new KeyboardController({
