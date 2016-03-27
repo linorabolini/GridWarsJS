@@ -7,6 +7,7 @@ define(function (require) {
         GameObject                  = require('gameObject'),
         PlayArea                    = require('playArea'),
         ParticleManager             = require('particleManager'),
+        SpriteBuffer                = require('spriteBuffer'),
         PointField                  = require('pointField'),
         _                           = require('underscore'),
         input                       = require('input'),
@@ -18,6 +19,7 @@ define(function (require) {
     var Engine = Matter.Engine,
         World = Matter.World,
         Body = Matter.Body,
+        Sleeping = Matter.Sleeping,
         Bodies = Matter.Bodies,
         Composite = Matter.Composite,
         Composites = Matter.Composites,
@@ -32,6 +34,7 @@ define(function (require) {
         this.debug = config.debug;
 
         this.players = [];
+        this.spriteBuffers = {};
 
         // setup renderer 
         this.renderer = new GameRenderer();
@@ -52,6 +55,11 @@ define(function (require) {
 
         // create a Matter.js engine
         var engine = this.engine = Engine.create(document.body, {
+            // positionIterations: 1,
+            // constraintIterations: 1,
+            // velocityIterations: 1,
+            sleepThreshold: 30,
+            enableSleeping: true,
             world: {
                 gravity: {
                     x:0,
@@ -84,6 +92,8 @@ define(function (require) {
         ]);
 
         Render.setPixelRatio(this.engine.render, 'auto');
+
+        this.addEnemies(1000);
     }
 
     Simulation.prototype = new Entity();
@@ -105,7 +115,20 @@ define(function (require) {
 
     Simulation.prototype.dispose = function () {
         this.renderer.dispose();
+        this.spriteBuffers = null;
         Entity.prototype.dispose.call(this);
+    }
+
+    Simulation.prototype.getSprite = function (spriteName, bufferSize) {
+        if(!this.spriteBuffers[spriteName]) {
+            var sb = this.spriteBuffers[spriteName] = new SpriteBuffer(spriteName, bufferSize || 1000, this.renderer.getScene());
+            this.addChild(sb);
+        }
+        var sprite = this.spriteBuffers[spriteName].getSprite();
+        if(!sprite) {
+            debugger;
+        }
+        return sprite;
     }
 
 
@@ -116,15 +139,26 @@ define(function (require) {
         })
     }
     
-    Simulation.prototype.addPlayers = function (inputSources) {
-        _.each(inputSources, function(config) {
-            this.addPlayer(config);
-        }, this);
+    Simulation.prototype.addEnemies = function (number) {
+        for (var i = number - 1; i >= 0; i--) {
+
+            var body = Bodies.circle(Math.random() * 900 + 50, Math.random() * 400 + 50, 5);
+            Body.setMass(body, 0.01);
+            Sleeping.set(body, true);
+
+                    // TODO dispose body when player is unactive
+            World.add(this.engine.world, body);
+            enemy = new GameObject(body, [
+                    new SpriteComponent(this.getSprite("assets/images/Seeker.png", number))
+                ]);
+
+            this.addChild(enemy);
+        };
     }
 
     Simulation.prototype.addPlayer = function (config) {
         var body = Bodies.circle(500, 250, 8);
-
+        // Sleeping.set(body, true);
         // TODO dispose body when player is unactive
         World.add(this.engine.world, body);
         var controller = new Controller(config.keyMap);
@@ -133,7 +167,7 @@ define(function (require) {
         var components = [controllerComponent];
 
         if(!this.debug) {
-            var sprite = new SpriteComponent(this.renderer.getScene(), "assets/images/Player.png");
+            var sprite = new SpriteComponent(this.getSprite("assets/images/Player.png", 10));
             components.push(sprite);
         }
 
@@ -142,19 +176,6 @@ define(function (require) {
         player.controller = controller;
         this.addChild(player, true);
         this.players[config.internalSourceId] = player;
-
-        for (i = 100 - 1; i >= 0; i--) {
-
-            body = Bodies.circle(500, 250, 8);
-
-                    // TODO dispose body when player is unactive
-                    World.add(this.engine.world, body);
-            enemy = new GameObject(body, [
-                    new SpriteComponent(this.renderer.getScene(), "assets/images/Seeker.png")
-                ]);
-
-            this.addChild(enemy);
-        };
     }
 
     return Simulation;

@@ -24,6 +24,7 @@ require.config({
         'app'               : 'src/App',
         'gameRenderer'      : 'src/GameRenderer',
         'gameObject'        : 'src/GameObject',
+        'spriteBuffer'      : 'src/SpriteBuffer',
         'particleManager'   : 'src/ParticleManager',
         'pointField'        : 'src/PointField',
         'playArea'          : 'src/PlayArea',

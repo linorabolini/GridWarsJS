@@ -29,7 +29,6 @@ define(function (require) {
         };
 
         var shaderMaterial = new THREE.ShaderMaterial( {
-
             uniforms:       uniforms,
             vertexShader:   document.getElementById( 'vertexshader' ).textContent,
             fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
@@ -37,7 +36,6 @@ define(function (require) {
             blending:       THREE.AdditiveBlending,
             depthTest:      false,
             transparent:    true
-
         });
 
         var geometry = new THREE.BufferGeometry();

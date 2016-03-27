@@ -2,6 +2,7 @@ define(function (require) {
 
     var Vector = require('matter').Vector;
     var Body = require('matter').Body;
+    var Sleeping = require('matter').Sleeping;
 
     function PlayerController(controller) {
         this.controller = controller;
@@ -25,8 +26,9 @@ define(function (require) {
         this.vector = Vector.mult(this.vector, this.speed * delta);
         if(Vector.magnitudeSquared(this.vector) != 0) {
             // Body.applyForce(go.body, {x:0, y:0}, this.vector);
+            Sleeping.set(go.body, false);
             Body.setVelocity(go.body, Vector.add(go.body.velocity, this.vector));
-            Body.setAngle(go.body, Math.atan2(-this.vector.y, this.vector.x));
+            Body.setAngle(go.body, Math.atan2(this.vector.y, this.vector.x));
         }
     }
 
