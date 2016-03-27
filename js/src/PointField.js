@@ -31,6 +31,7 @@ define(function (require) {
         this.playArea = playArea;
         this.scene = scene;
         this.net = this.createNet(this.rows, this.cols);
+        this.net.position.set(500, -250, 0);
         this.scene.add(this.net);
     }
 

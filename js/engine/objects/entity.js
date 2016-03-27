@@ -79,9 +79,10 @@ define(function (require) {
         }
     };
 
-    Entity.prototype.addChild = function (child) {
+    Entity.prototype.addChild = function (child, activate) {
         this.children.push(child);
         child.parent = this;
+        activate && child.activate();
     };
 
     Entity.prototype.removeChild = function (child) {

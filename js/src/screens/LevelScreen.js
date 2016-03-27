@@ -3,7 +3,6 @@ define(function (require) {
     var Entity                      = require('entity'),
         THREE                       = require('three'),
         files                       = require('files'),
-        utils                       = require('utils'),
         Controller                  = require('controller'),
         GameObject                  = require('gameObject'),
         Weapon                      = require('weapon'),

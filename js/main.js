@@ -6,6 +6,7 @@ require.config({
     // libs
         'jquery'        : 'libs/jquery-2.1.0.min',
         'underscore'    : 'libs/underscore-min',
+        'matter'        : 'libs/matter.min',
         'datgui'        : 'libs/dat.gui',
         'fishbone'      : 'libs/fishbone',
         'three'         : 'libs/three.min',
@@ -20,13 +21,21 @@ require.config({
         'mobile'        : 'engine/inputs/mobile',
 
     // src
-        'levelScreen'       : 'src/LevelScreen',
         'app'               : 'src/App',
+        'gameRenderer'      : 'src/GameRenderer',
         'gameObject'        : 'src/GameObject',
         'particleManager'   : 'src/ParticleManager',
         'pointField'        : 'src/PointField',
         'playArea'          : 'src/PlayArea',
         'weapon'            : 'src/Weapon',
+
+            // AI
+            'simulation'        : 'src/AI/Simulation',
+
+            // screens
+            'levelScreen'       : 'src/screens/LevelScreen',
+            'simulationScreen'  : 'src/screens/SimulationScreen',
+
             // components
             'followTargetsMover'            : 'src/components/FollowTargetsMover',
             'linkedTargetMover'             : 'src/components/LinkedTargetMover',

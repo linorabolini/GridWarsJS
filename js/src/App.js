@@ -8,7 +8,8 @@ define(function (require) {
         Controller = require('controller'),
         server = require('server'),
         config = require('config'),
-        LevelScreen = require('levelScreen');
+        LevelScreen = require('levelScreen'),
+        SimulationScreen = require('simulationScreen');
 
     function App () {
         this.screen = null;
@@ -22,13 +23,13 @@ define(function (require) {
         this.startApp();
 
         // add keyboard source
-        // input.addSource(new KeyboardController({
-        //     '74': 'ARROW_LEFT',
-        //     '76': 'ARROW_RIGHT',
-        //     '75': 'ARROW_DOWN',
-        //     '73': 'ARROW_UP',
-        //     '80': 'BUTTON_A'
-        // }));
+        input.addSource(new KeyboardController({
+            '74': 'ARROW_LEFT',
+            '76': 'ARROW_RIGHT',
+            '75': 'ARROW_DOWN',
+            '73': 'ARROW_UP',
+            '80': 'BUTTON_A'
+        }));
 
         // add keyboard source
         input.addSource(new KeyboardController({
@@ -44,7 +45,7 @@ define(function (require) {
     }
 
     App.prototype.startApp = function () {
-        var screen = new LevelScreen();
+        var screen = new SimulationScreen();
         this.setScreen(screen);
     }
 
