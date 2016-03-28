@@ -30,7 +30,6 @@ define(function (require){
     FollowTargetsMover.prototype.activate = function (go) { }
     FollowTargetsMover.prototype.deactivate = function (go) { }
     FollowTargetsMover.prototype.render = function (go) { }
-
     FollowTargetsMover.prototype.getTarget = function (go) {
 
         var maxDistance = 99999, target, tmpDistance, tmpTarget;

@@ -25,7 +25,6 @@ define(function (require) {
         Vector.normalise(this.vector);
         this.vector = Vector.mult(this.vector, this.speed * delta);
         if(Vector.magnitudeSquared(this.vector) != 0) {
-            // Body.applyForce(go.body, {x:0, y:0}, this.vector);
             Sleeping.set(go.body, false);
             Body.setVelocity(go.body, Vector.add(go.body.velocity, this.vector));
             Body.setAngle(go.body, Math.atan2(this.vector.y, this.vector.x));

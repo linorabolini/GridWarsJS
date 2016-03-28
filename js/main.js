@@ -32,12 +32,14 @@ require.config({
 
             // AI
             'simulation'        : 'src/AI/Simulation',
+            'sensor'            : 'src/AI/Sensor',
 
             // screens
             'levelScreen'       : 'src/screens/LevelScreen',
             'simulationScreen'  : 'src/screens/SimulationScreen',
 
             // components
+            'AIComponent'                   : 'src/components/AIComponent',
             'followTargetsMover'            : 'src/components/FollowTargetsMover',
             'linkedTargetMover'             : 'src/components/LinkedTargetMover',
             'randomPointMover'              : 'src/components/RandomPointMover',

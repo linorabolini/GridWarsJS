@@ -5,7 +5,6 @@ define(function (require) {
 
     function GameObject (body, components) {
         this.body = body;
-        this.rotation = 0;
         Entity.call(this, components);
     }
 

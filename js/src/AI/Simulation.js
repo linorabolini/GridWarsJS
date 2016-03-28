@@ -8,6 +8,8 @@ define(function (require) {
         PlayArea                    = require('playArea'),
         ParticleManager             = require('particleManager'),
         SpriteBuffer                = require('spriteBuffer'),
+        Sensor                      = require('sensor'),
+        AIComponent                 = require('AIComponent'),
         PointField                  = require('pointField'),
         _                           = require('underscore'),
         input                       = require('input'),
@@ -93,7 +95,7 @@ define(function (require) {
 
         Render.setPixelRatio(this.engine.render, 'auto');
 
-        this.addEnemies(1000);
+        this.addEnemies(100);
     }
 
     Simulation.prototype = new Entity();
@@ -142,15 +144,31 @@ define(function (require) {
     Simulation.prototype.addEnemies = function (number) {
         for (var i = number - 1; i >= 0; i--) {
 
-            var body = Bodies.circle(Math.random() * 900 + 50, Math.random() * 400 + 50, 5);
-            Body.setMass(body, 0.01);
+            var body = Bodies.circle(Math.random() * 900 + 50, Math.random() * 400 + 50, 5, {
+                mass: 0.01,
+                collisionFilter: {
+                    group: -1
+                }
+            });
             Sleeping.set(body, true);
 
-                    // TODO dispose body when player is unactive
+            // TODO dispose body when player is unactive
             World.add(this.engine.world, body);
-            enemy = new GameObject(body, [
-                    new SpriteComponent(this.getSprite("assets/images/Seeker.png", number))
-                ]);
+
+            var sensors = [
+                new Sensor({sprite: this.getSprite("assets/images/Bullet.png", number * 5), angle: 0}),
+                new Sensor({sprite: this.getSprite("assets/images/Bullet.png"), angle: 0.5}),
+                new Sensor({sprite: this.getSprite("assets/images/Bullet.png"), angle: -0.5}),
+                new Sensor({sprite: this.getSprite("assets/images/Bullet.png"), angle: 1}),
+                new Sensor({sprite: this.getSprite("assets/images/Bullet.png"), angle: -1})
+            ];
+            var controllerComponent = new AIComponent(this.engine.world, sensors);
+
+            var sprite = new SpriteComponent(this.getSprite("assets/images/Seeker.png", number));
+
+            var components = [controllerComponent, sprite];
+
+            enemy = new GameObject(body, components);
 
             this.addChild(enemy);
         };
@@ -158,18 +176,13 @@ define(function (require) {
 
     Simulation.prototype.addPlayer = function (config) {
         var body = Bodies.circle(500, 250, 8);
-        // Sleeping.set(body, true);
-        // TODO dispose body when player is unactive
         World.add(this.engine.world, body);
+
         var controller = new Controller(config.keyMap);
         var controllerComponent = new PlayerControllerComponent(controller);
+        var sprite = new SpriteComponent(this.getSprite("assets/images/Player.png", 10));
 
-        var components = [controllerComponent];
-
-        if(!this.debug) {
-            var sprite = new SpriteComponent(this.getSprite("assets/images/Player.png", 10));
-            components.push(sprite);
-        }
+        var components = [controllerComponent, sprite];
 
         var player = new GameObject(body, components);
 

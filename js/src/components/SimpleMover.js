@@ -2,7 +2,6 @@ define(function (require){
 
     var THREE = require('three');
 
-
     function SimpleMover(speed) {
         this.speed = speed || 20;
         this.moveDirection = new THREE.Vector3(0,0,0);
