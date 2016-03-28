@@ -95,7 +95,7 @@ define(function (require) {
 
         Render.setPixelRatio(this.engine.render, 'auto');
 
-        this.addEnemies(100);
+        this.addEnemies(1000);
     }
 
     Simulation.prototype = new Entity();
@@ -166,7 +166,7 @@ define(function (require) {
 
             var sprite = new SpriteComponent(this.getSprite("assets/images/Seeker.png", number));
 
-            var components = [controllerComponent, sprite];
+            var components = [sprite];
 
             enemy = new GameObject(body, components);
 
