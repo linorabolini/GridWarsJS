@@ -94,7 +94,7 @@ define(function (require) {
 
         Render.setPixelRatio(this.engine.render, 'auto');
 
-        this.addEnemies(20);
+        this.addEnemies(2000);
 
         Events.on(engine, "collisionStart", _.bind(this.onCollisionStart, this));
     }
