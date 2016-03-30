@@ -3,23 +3,23 @@ define(function (require) {
     var THREE = require('three');
     
 
-    function GameRenderer () {
+    function GameRenderer (playArea) {
         // setup scene 
         this.scene = new THREE.Scene(); // setup scene 
-        this.setupCamera();             // camera
+        this.setupCamera(playArea);             // camera
         this.setupRenderer();           // setup renderer
         this.setupComposer();           // setup composer
 
     }
 
-    GameRenderer.prototype.setupCamera = function () {
+    GameRenderer.prototype.setupCamera = function (playArea) {
         var width = window.innerWidth;
         var height = window.innerHeight;
 
         this.camera = new THREE.PerspectiveCamera( 60, width / height, 1, 5000 );
         this.camera.position.z = 500;
-        this.camera.position.x = 500;
-        this.camera.position.y = -250;
+        this.camera.position.x = playArea.width / 2;
+        this.camera.position.y = -playArea.height / 2;
     }
 
     GameRenderer.prototype.setupRenderer = function () {
@@ -72,7 +72,8 @@ define(function (require) {
     }
 
     GameRenderer.prototype.render = function () {
-        this.renderer.clear();
+        // this.renderer.clear();
+        // this.renderer.render(this.scene, this.camera);
         this.composer.render( 0.1 ); 
     }
 

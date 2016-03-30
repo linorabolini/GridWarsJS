@@ -8,14 +8,14 @@ define(function (require) {
         this.position = new THREE.Vector3(0,0,0);
         this.velocity = new THREE.Vector3(0,0,0);
         this.rotation = 0.0;
-        this.size = 2.0;
+        this.size = 1.0;
         this.alpha = 1.0;
         this.color = color;
     }
 
     var tmpVector = new THREE.Vector3(0,0,0);
 
-    function ParticleEmitter (particleCount, playArea, scene) {
+    function ParticleEmitter (particleCount, playArea, scene, texture) {
         Entity.call(this);
 
         this.scene = scene;
@@ -25,7 +25,7 @@ define(function (require) {
 
         var uniforms = {
             color:     { type: "c", value: new THREE.Color( 0xffffff ) },
-            texture:   { type: "t", value: THREE.ImageUtils.loadTexture( "assets/images/Laser.png" ) }
+            texture:   { type: "t", value: new THREE.TextureLoader().load( "assets/images/Laser.png" ) }
         };
 
         var shaderMaterial = new THREE.ShaderMaterial( {
@@ -37,6 +37,8 @@ define(function (require) {
             depthTest:      false,
             transparent:    true
         });
+
+        shaderMaterial.index0AttributeName = "position";
 
         var geometry = new THREE.BufferGeometry();
 
@@ -104,7 +106,7 @@ define(function (require) {
                 return;
             }
 
-            particle.position.copy(position);
+            particle.position.set(position.x, -position.y, position.z || 0);
             particle.velocity.set(Math.random() * 2 - 1, Math.random() * 2 - 1, 0);
             particle.velocity.setLength(Math.random() * forceV + force);
             particle.alpha = 1.0;
@@ -122,8 +124,8 @@ define(function (require) {
                 return;
             }
 
-            particle.position.copy(position);
-            particle.velocity.copy(direction);
+            particle.position.set(position.x, -position.y, position.z || 0);
+            particle.velocity.set(direction.x, direction.y, direction.z || 0);
 
             if(spreadAmount) {
                 tmpVector.set(Math.random() * 2 -1, Math.random() * 2 -1, 0).multiplyScalar(spreadAmount);
@@ -170,17 +172,17 @@ define(function (require) {
                 .multiplyScalar(dt);
 
             particle.position.add(tmpVector)
-                .clamp(this.playArea.vecMin, this.playArea.vecMax);
+                // .clamp(this.playArea.vecMin, this.playArea.vecMax);
 
-                if (particle.position.x <= this.playArea.left || particle.position.x >= this.playArea.right) {
-                    var  vx = particle.velocity.x;
-                    particle.velocity.setX(-vx);
-                }
+                // if (particle.position.x <= 0 || particle.position.x >= this.playArea.width) {
+                //     var  vx = particle.velocity.x;
+                //     particle.velocity.setX(-vx);
+                // }
 
-                if (particle.position.y <= this.playArea.bottom || particle.position.y >= this.playArea.top) {
-                    var  vy = particle.velocity.y;
-                    particle.velocity.setY(-vy);
-                }
+                // if (particle.position.y <= 0 || particle.position.y >= this.playArea.height) {
+                //     var  vy = particle.velocity.y;
+                //     particle.velocity.setY(-vy);
+                // }
 
             particle.rotation = Math.atan2(tmpVector.x, tmpVector.y) + Math.PI / 2;
             particle.alpha = Math.min(2.0, particle.velocity.lengthSq() * 0.1);

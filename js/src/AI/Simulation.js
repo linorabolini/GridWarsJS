@@ -27,7 +27,8 @@ define(function (require) {
         Composites = Matter.Composites,
         MouseConstraint = Matter.MouseConstraint,
         Render = Matter.Render,
-        Runner = Matter.Runner;
+        Runner = Matter.Runner,
+        Events = Matter.Events;
 
     function Simulation (config) {
         Entity.call(this);
@@ -38,12 +39,10 @@ define(function (require) {
         this.players = [];
         this.spriteBuffers = {};
 
-        // setup renderer 
-        this.renderer = new GameRenderer();
-
         // setup scenario
-        this.playArea = new PlayArea(1000, 500); // play Area setup
-        this.pointField = new PointField(this.playArea, this.renderer.getScene(), 80, 40);
+        this.playArea = new PlayArea(500, 500); // play Area setup
+        this.renderer = new GameRenderer(this.playArea);
+        this.pointField = new PointField(this.playArea, this.renderer.getScene(), 80, 80);
         this.addChild(this.pointField);
 
         // create particle system
@@ -57,9 +56,9 @@ define(function (require) {
 
         // create a Matter.js engine
         var engine = this.engine = Engine.create(document.body, {
-            // positionIterations: 1,
-            // constraintIterations: 1,
-            // velocityIterations: 1,
+            positionIterations: 1,
+            constraintIterations: 1,
+            velocityIterations: 1,
             sleepThreshold: 30,
             enableSleeping: true,
             world: {
@@ -95,14 +94,21 @@ define(function (require) {
 
         Render.setPixelRatio(this.engine.render, 'auto');
 
-        this.addEnemies(1000);
+        this.addEnemies(0);
+
+        Events.on(engine, "collisionStart", _.bind(this.onCollisionStart, this));
     }
 
     Simulation.prototype = new Entity();
 
     Simulation.prototype.update = function (dt) {
         Entity.prototype.update.call(this, dt);
-        Engine.update(this.engine, 1000 / 60);
+        Engine.update(this.engine, 1);
+
+        for (var i = this.players.length - 1; i >= 0; i--) {
+            var p = this.players[i];
+            this.pointField.createExplosion(p.body.position, 10 * p.body.motion);
+        }
     }
 
     Simulation.prototype.render = function () {
@@ -121,15 +127,24 @@ define(function (require) {
         Entity.prototype.dispose.call(this);
     }
 
+    Simulation.prototype.onCollisionStart = function (event) {
+        var pairs = event.pairs;
+
+        for (var i = pairs.length - 1; i >= 0; i--) {
+            var pair = pairs[i];
+
+            var body = pair.bodyA.isStatic ? pair.bodyB : pair.bodyA;
+            this.particleManager.createExplosion(body.position, 50, 100, 200);
+            this.pointField.createExplosion(body.position, 1000);
+        }
+    }
+
     Simulation.prototype.getSprite = function (spriteName, bufferSize) {
         if(!this.spriteBuffers[spriteName]) {
             var sb = this.spriteBuffers[spriteName] = new SpriteBuffer(spriteName, bufferSize || 1000, this.renderer.getScene());
             this.addChild(sb);
         }
         var sprite = this.spriteBuffers[spriteName].getSprite();
-        if(!sprite) {
-            debugger;
-        }
         return sprite;
     }
 
@@ -138,17 +153,14 @@ define(function (require) {
         var controller = this.players[e.id].controller;
         _.each(e.data, function(item, key, data) {
             controller.set(key, data[key]);
-        })
+        });
     }
     
     Simulation.prototype.addEnemies = function (number) {
         for (var i = number - 1; i >= 0; i--) {
 
-            var body = Bodies.circle(Math.random() * 900 + 50, Math.random() * 400 + 50, 5, {
-                mass: 0.01,
-                collisionFilter: {
-                    group: -1
-                }
+            var body = Bodies.circle(this.playArea.getRandomXCoord(), this.playArea.getRandomYCoord(), 5, {
+                mass: 0.01
             });
             Sleeping.set(body, true);
 
@@ -156,17 +168,17 @@ define(function (require) {
             World.add(this.engine.world, body);
 
             var sensors = [
-                new Sensor({sprite: this.getSprite("assets/images/Bullet.png", number * 5), angle: 0}),
-                new Sensor({sprite: this.getSprite("assets/images/Bullet.png"), angle: 0.5}),
-                new Sensor({sprite: this.getSprite("assets/images/Bullet.png"), angle: -0.5}),
-                new Sensor({sprite: this.getSprite("assets/images/Bullet.png"), angle: 1}),
-                new Sensor({sprite: this.getSprite("assets/images/Bullet.png"), angle: -1})
+                // new Sensor({sprite: this.getSprite("assets/images/Bullet.png", number * 5), direction: 1}),
+                // new Sensor({sprite: this.getSprite("assets/images/Bullet.png"), angle: 0.5}),
+                // new Sensor({sprite: this.getSprite("assets/images/Bullet.png"), angle: -0.5}),
+                // new Sensor({sprite: this.getSprite("assets/images/Bullet.png"), angle: 1}),
+                // new Sensor({sprite: this.getSprite("assets/images/Bullet.png"), direction: -1})
             ];
             var controllerComponent = new AIComponent(this.engine.world, sensors);
 
             var sprite = new SpriteComponent(this.getSprite("assets/images/Seeker.png", number));
 
-            var components = [sprite];
+            var components = [controllerComponent, sprite];
 
             enemy = new GameObject(body, components);
 
@@ -175,7 +187,7 @@ define(function (require) {
     }
 
     Simulation.prototype.addPlayer = function (config) {
-        var body = Bodies.circle(500, 250, 8);
+        var body = Bodies.circle(this.playArea.width/2, this.playArea.height/2, 8);
         World.add(this.engine.world, body);
 
         var controller = new Controller(config.keyMap);

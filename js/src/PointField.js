@@ -19,19 +19,19 @@ define(function (require) {
     // a = (-k/m) * x 
     
     var tmpVector = new THREE.Vector3(0,0,0);
-    var geometry = null;
-    
+    var tmpPosVector = new THREE.Vector3(0,0,0);    
     
     function PointField (playArea, scene, rows, cols) {
         Entity.call(this);
 
+        this.geometry = null;
         this.points = [];
         this.rows = rows;
         this.cols = cols;
         this.playArea = playArea;
         this.scene = scene;
         this.net = this.createNet(this.rows, this.cols);
-        this.net.position.set(500, -250, 0);
+        this.net.position.set(playArea.width / 2, -playArea.height/2, 0);
         this.scene.add(this.net);
     }
 
@@ -39,12 +39,12 @@ define(function (require) {
 
     PointField.prototype.createNet = function (rows, cols) {
         var material = new THREE.LineBasicMaterial({
-            color: 0x003300,
+            color: 0x003322,
             linewidth: 1,
             blending: THREE.AdditiveBlending
         });
 
-        geometry = new THREE.Geometry();
+        this.geometry = new THREE.Geometry();
 
         var i, j, point;
 
@@ -66,7 +66,7 @@ define(function (require) {
                     point = this.points[i][j];
                 else
                     point = this.points[i][cols - j];
-                geometry.vertices.push(point.position);
+                this.geometry.vertices.push(point.position);
             };
         };
 
@@ -76,12 +76,12 @@ define(function (require) {
                     point = this.points[i][j];
                 else
                     point = this.points[rows - i][j];
-                geometry.vertices.push(point.position);
+                this.geometry.vertices.push(point.position);
             };
         };
 
 
-        var line = new THREE.Line( geometry, material );
+        var line = new THREE.Line( this.geometry, material );
 
         return line;
     }
@@ -89,15 +89,15 @@ define(function (require) {
     PointField.prototype.createExplosion = function (position, force) {
         force = force || 20;
 
-        position.setZ(-1);
+        tmpPosVector.set(position.x - this.playArea.width /2, -position.y + this.playArea.height/2, position.z || -1);
         
         // starts from 1 to avoid borders
         for (i = 1; i < this.rows; i++) {
             for (j = 1; j < this.cols; j++) {
                 var point = this.points[i][j];
 
-                tmpVector.subVectors(point.position, position)
-                    .multiplyScalar(force / tmpVector.lengthSq());
+                tmpVector.subVectors(point.position, tmpPosVector)
+                    .multiplyScalar(force / tmpVector.lengthSq()*2);
 
                 point.force.add(tmpVector);
             }
@@ -143,27 +143,28 @@ define(function (require) {
                     .multiplyScalar(dt);
 
                 point.position.add(tmpVector)
-                    .clamp(this.playArea.vecMin, this.playArea.vecMax);
+                //     .clamp(this.playArea.vecMin, this.playArea.vecMax);
 
-                if (point.position.x <= this.playArea.left || point.position.x >= this.playArea.right) {
-                    var  vx = point.velocity.x;
-                    point.velocity.setX(-vx);
-                }
+                // if (point.position.x <= this.playArea.left || point.position.x >= this.playArea.right) {
+                //     var  vx = point.velocity.x;
+                //     point.velocity.setX(-vx);
+                // }
 
-                if (point.position.y <= this.playArea.bottom || point.position.y >= this.playArea.top) {
-                    var  vy = point.velocity.y;
-                    point.velocity.setY(-vy);
-                }
+                // if (point.position.y <= this.playArea.bottom || point.position.y >= this.playArea.top) {
+                //     var  vy = point.velocity.y;
+                //     point.velocity.setY(-vy);
+                // }
 
             }
         }
-        geometry.verticesNeedUpdate = true;
+        this.geometry.verticesNeedUpdate = true;
     }
 
     PointField.prototype.dispose = function () {
         this.points = null;
         this.scene.remove(this.net);
         this.scene = null;
+        this.geometry = null;
         
         Entity.prototype.dispose.call(this, arguments);
     }

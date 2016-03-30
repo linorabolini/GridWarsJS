@@ -18,11 +18,11 @@ define(function (require) {
     }
 
     PlayArea.prototype.getRandomXCoord = function () {
-        return getMidRandom(this.width);
+        return Math.random() * this.width;
     }
 
     PlayArea.prototype.getRandomYCoord = function () {
-        return getMidRandom(this.height);
+        return Math.random() * this.height;
     }
 
     PlayArea.prototype.isOut = function (go) {

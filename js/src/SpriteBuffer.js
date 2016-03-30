@@ -22,7 +22,7 @@ define(function (require) {
 
         var uniforms = {
             color:     { type: "c", value: new THREE.Color( 0xffffff ) },
-            texture:   { type: "t", value: THREE.ImageUtils.loadTexture( texture ) },
+            texture:   { type: "t", value: new THREE.TextureLoader().load( texture ) },
             scale:     { type: 'f', value: window.innerHeight / 40 }
         };
 

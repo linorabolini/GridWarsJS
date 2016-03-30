@@ -1,11 +1,11 @@
-define(function (require) {
+define(function(require) {
 
-    var Entity                      = require('entity'),
-        Simulation                  = require('simulation');
-        input                       = require('input');
-    
+    var Entity     = require('entity');
+    var Simulation = require('simulation');
+    var input      = require('input');
 
-    function SimulationScreen () {
+
+    function SimulationScreen() {
         // extend from entity
         Entity.call(this);
 
