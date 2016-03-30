@@ -56,9 +56,9 @@ define(function (require) {
 
         // create a Matter.js engine
         var engine = this.engine = Engine.create(document.body, {
-            positionIterations: 1,
-            constraintIterations: 1,
-            velocityIterations: 1,
+            // positionIterations: 1,
+            // constraintIterations: 1,
+            // velocityIterations: 1,
             sleepThreshold: 30,
             enableSleeping: true,
             world: {
@@ -94,7 +94,7 @@ define(function (require) {
 
         Render.setPixelRatio(this.engine.render, 'auto');
 
-        this.addEnemies(0);
+        this.addEnemies(20);
 
         Events.on(engine, "collisionStart", _.bind(this.onCollisionStart, this));
     }
