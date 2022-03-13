@@ -27,7 +27,9 @@ define(function (require) {
         this.sprite.visible = false;
     }
     SpriteComponent.prototype.update = function (go, delta) { }
-    SpriteComponent.prototype.dispose = function (go) { }
+    SpriteComponent.prototype.dispose = function (go) {
+        this.sprite.visible = false;
+    }
 
     return SpriteComponent;
 });
