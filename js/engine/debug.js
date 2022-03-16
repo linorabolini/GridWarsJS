@@ -1,13 +1,11 @@
-define(function(require) {
-    var config = require('config'),
-        debug = config.debug;
+const config = require("config");
+const debug = function () {
+    if (!config.debug) return;
+    var i;
+    console.log("===== DEBUG ======");
+    for (i in arguments) {
+        console.log(arguments[i]);
+    }
+};
 
-    return function () {
-            if (!debug) return;
-            var i;
-            console.log('===== DEBUG ======');
-            for (i in arguments) {
-              console.log(arguments[i]);
-            }
-        }
-});
+export default debug;

@@ -1,40 +1,40 @@
-define(function (require) {
+var THREE = require("three");
 
-    var THREE = require('three');
+function getMidRandom(number) {
+    return Math.random() * number - number * 0.5;
+}
 
-    function PlayArea(width, height) {
-        this.top    = height/2;
-        this.bottom = -height/2;
-        this.left   = -width/2;
-        this.right  = width/2;
-        this.width  = width;
+class PlayArea {
+    constructor(width, height) {
+        this.top = height / 2;
+        this.bottom = -height / 2;
+        this.left = -width / 2;
+        this.right = width / 2;
+        this.width = width;
         this.height = height;
         this.vecMin = new THREE.Vector3(this.left, this.bottom, 0);
         this.vecMax = new THREE.Vector3(this.right, this.top, 0);
     }
 
-    function getMidRandom(number) {
-        return Math.random() * number - number * 0.5;
-    }
-
-    PlayArea.prototype.getRandomXCoord = function () {
+    getRandomXCoord() {
         return getMidRandom(this.width);
     }
 
-    PlayArea.prototype.getRandomYCoord = function () {
+    getRandomYCoord() {
         return getMidRandom(this.height);
     }
 
-    PlayArea.prototype.isOut = function (go) {
-        return go.position.x < this.left
-                 || go.position.y < this.bottom 
-                 || go.position.x > this.right 
-                 || go.position.y > this.top;
+    isOut(go) {
+        return (
+            go.position.x < this.left ||
+            go.position.y < this.bottom ||
+            go.position.x > this.right ||
+            go.position.y > this.top
+        );
     }
 
-    PlayArea.prototype.isInside = function (go) {
+    isInside(go) {
         return !this.isOut(go);
     }
-
-    return PlayArea;
-});
+}
+export default PlayArea;

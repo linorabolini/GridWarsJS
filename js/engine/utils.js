@@ -1,17 +1,14 @@
-define(function (require) {
-    'use strict';
+var utils = {};
 
-    var utils = {};
+utils.getRandom = function (array) {
+    return array[Math.floor(Math.random() * array.length)];
+};
 
-    utils.getRandom = function (array) {
-        return array[Math.floor(Math.random() * array.length)];
-    };
+utils.getKeyCode = function (key) {
+    var code;
 
-    utils.getKeyCode = function (key) {
-        var code;
-
-        // override some keys
-        switch (key) {
+    // override some keys
+    switch (key) {
         case 38: // key up
             code = "up";
             break;
@@ -29,38 +26,41 @@ define(function (require) {
             break;
         default:
             code = String.fromCharCode(key);
-        }
+    }
 
-        return code;
-    };
+    return code;
+};
 
-    utils.guid = function() {
-      function s4() {
+utils.guid = (function () {
+    function s4() {
         return Math.floor((1 + Math.random()) * 0x10000)
-                   .toString(16)
-                   .substring(1);
-      }
-      return function() {
-        return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
-               s4() + '-' + s4() + s4() + s4();
-      };
-    }();
-
-    utils.capitalize = function(string) {
-        return string.charAt(0).toUpperCase() + string.substring(1);
+            .toString(16)
+            .substring(1);
     }
+    return function () {
+        return (
+            s4() +
+            s4() +
+            "-" +
+            s4() +
+            "-" +
+            s4() +
+            "-" +
+            s4() +
+            "-" +
+            s4() +
+            s4() +
+            s4()
+        );
+    };
+})();
 
-    utils.getSetter = function(string) {
-        return "set" + this.capitalize(string);
-    }
+utils.lerp = function (a, b, c) {
+    return (1 - c) * a + b * c;
+};
 
-    utils.lerp = function (a, b, c) {
-        return  (1 - c) * a + b * c;
-    }
+utils.map = function (value, istart, istop, ostart, ostop) {
+    return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
+};
 
-    utils.map = function (value, istart, istop, ostart, ostop) {
-        return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
-    }
-
-    return utils;
-});
+export default utils;

@@ -1,17 +1,14 @@
-define(function (require) {
-    'use strict';
-
-    function Entity (components) {
+class Entity {
+    constructor(components = []) {
         this.parent = null;
         this.children = [];
-        this.isDisposed = false;
-        this.isActive =  true;
         this.components = [];
+        this.isDisposed = false;
+        this.isActive = true;
         this.addComponents(components);
     }
 
-    Entity.prototype.dispose = function () {
-        var i;
+    dispose() {
         if (this.isDisposed) {
             console.error("Tried to dispose an already disposed object");
             return;
@@ -19,123 +16,65 @@ define(function (require) {
 
         this.isDisposed = true;
 
-        for (i = this.children.length - 1; i >= 0; i--) {
-            this.children[i].dispose();
-        }
+        this.children.forEach(c => c.dispose());
+        this.components.forEach(c => c.dispose());
 
         this.children = [];
-
-        for (i = this.components.length - 1; i >= 0; i--) {
-            this.components[i].dispose(this);
-        }
-
         this.components = [];
 
         this.parent && this.parent.removeChild(this);
-    };
+    }
 
-    Entity.prototype.update = function (dt) {
-        var i;
+    update(dt) {
+        if (!this.isActive || this.isDisposed) return;
 
-        if(!this.isActive || this.isDisposed)
-            return
+        this.children.forEach(c => c.update(dt));
+        this.components.forEach(c => c.update(this, dt));
+    }
 
-        for (i = this.children.length - 1; i >= 0; i--) {
-            this.children[i].update(dt);
-        }
-            
-        for (i = this.components.length - 1; i >= 0; i--) {
-            this.components[i].update(this, dt);
-        }
-    };
+    lateUpdate(dt) {
+        if (!this.isActive || this.isDisposed) return;
 
-    Entity.prototype.lateUpdate = function (dt) {
-        var i;
+        this.children.forEach(c => c.lateUpdate(dt));
+        this.components.forEach(c => c.lateUpdate(this, dt));
+    }
 
-        if(!this.isActive || this.isDisposed)
-            return
+    render() {
+        if (!this.isActive || this.isDisposed) return;
 
-        for (i = this.children.length - 1; i >= 0; i--) {
-            this.children[i].lateUpdate(dt);
-        }
-            
-        // for (i = this.components.length - 1; i >= 0; i--) {
-        //     this.components[i].lateUpdate(this, dt);
-        // }
-    };
+        this.children.forEach(c => c.render());
+        this.components.forEach(c => c.render(this));
+    }
 
-    Entity.prototype.render = function () {
-        var i;
-
-        if(!this.isActive || this.isDisposed)
-            return
-
-        for (i = this.children.length - 1; i >= 0; i--) {
-            this.children[i].render();
-        }
-            
-        for (i = this.components.length - 1; i >= 0; i--) {
-            this.components[i].render(this);
-        }
-    };
-
-    Entity.prototype.addChild = function (child) {
+    addChild(child) {
         this.children.push(child);
         child.parent = this;
-    };
+    }
 
-    Entity.prototype.removeChild = function (child) {
+    removeChild(child) {
         var indx = this.children.indexOf(child);
         if (indx >= 0) {
             this.children.splice(indx, 1);
             child.parent = null;
             return child;
         }
-    };
-
-    Entity.prototype.activate = function ()
-    {
-        var i;
-        this.isActive = true;
-        for (i = this.components.length - 1; i >= 0; i--) {
-            this.components[i].activate(this);
-        }
-
-        for (i = this.children.length - 1; i >= 0; i--) {
-            this.children[i].activate();
-        }
-    };
-
-    Entity.prototype.deactivate = function ()
-    {
-        var i;
-        this.isActive = false;
-        for (i = this.components.length - 1; i >= 0; i--) {
-            this.components[i].deactivate(this);
-        }
-
-        for (i = this.children.length - 1; i >= 0; i--) {
-            this.children[i].deactivate();
-        }
-    };
-
-    Entity.prototype.addComponents = function (components)
-    {
-        if(!components)
-            return;
-        
-        var i;
-
-        for (i = components.length - 1; i >= 0; i--) {
-            this.addComponent(components[i]);
-        }
-    };
-
-    Entity.prototype.addComponent = function (component)
-    {
-        component.setup(this);
-        this.components.push(component);
     }
 
-    return Entity;
-});
+    activate() {
+        this.isActive = true;
+        this.components.forEach(c => c.activate(this));
+        this.children.forEach(c => c.activate());
+    }
+
+    deactivate() {
+        this.isActive = true;
+        this.components.forEach(c => c.deactivate(this));
+        this.children.forEach(c => c.deactivate());
+    }
+
+    addComponents(components) {
+        components.forEach(c => c.setup(this));
+        this.components.push(...components);
+    }
+}
+export default Entity;

@@ -1,24 +1,18 @@
-define(function (require){
+import Component from "./Component";
+var THREE = require("three");
 
-    var THREE = require('three');
-
-
-    function SimpleMover(speed) {
+class SimpleMover extends Component {
+    constructor(speed) {
         this.speed = speed || 20;
-        this.moveDirection = new THREE.Vector3(0,0,0);
-    };
+        this.moveDirection = new THREE.Vector3(0, 0, 0);
+    }
 
-    SimpleMover.prototype.setup = function (go) { }
-    SimpleMover.prototype.update = function (go, delta) {
+    update(go, delta) {
         go.velocity.add(this.moveDirection);
     }
-    SimpleMover.prototype.render = function (go) { }
-    SimpleMover.prototype.dispose = function (go) { }
-    SimpleMover.prototype.activate = function (go) {
+    activate(go) {
         this.moveDirection.set(Math.cos(go.rotation), Math.sin(go.rotation), 0);
         this.moveDirection.multiplyScalar(this.speed);
     }
-    SimpleMover.prototype.deactivate = function (go) { }
-
-    return SimpleMover;
-})
+}
+export default SimpleMover;

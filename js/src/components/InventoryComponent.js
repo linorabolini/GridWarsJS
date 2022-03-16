@@ -1,38 +1,39 @@
-define(function (require) {
-
-    function InventoryComponent() {
+import Component from "./Component";
+class InventoryComponent extends Component {
+    constructor() {
         this.items = [];
         this.selectedItem = null;
+        super();
     }
 
-    InventoryComponent.prototype.update = function (go, delta) {
-        if(this.selectedItem) {
+    update(go, delta) {
+        if (this.selectedItem) {
             this.selectedItem.update(go, delta);
         }
+        super.update(go, delta);
     }
 
-    InventoryComponent.prototype.dispose = function (go) {
+    dispose(go) {
         for (var i = this.items.length - 1; i >= 0; i--) {
             this.items[i].dispose();
-        };
+        }
         this.items = null;
+        super.dispose(go)
     }
 
-    InventoryComponent.prototype.setup = function (go) { }
-    InventoryComponent.prototype.activate = function (go) { }
-    InventoryComponent.prototype.deactivate = function (go) { }
-    InventoryComponent.prototype.render = function (go) {
-        if(this.selectedItem) {
+    render(go) {
+        if (this.selectedItem) {
             this.selectedItem.render(go);
         }
+        super.render(go)
     }
 
-    InventoryComponent.prototype.addItem = function (item) {
+    addItem(item) {
         this.items.push(item);
-        if(!this.selectedItem){
+        if (!this.selectedItem) {
             this.selectedItem = item;
         }
     }
+}
 
-    return InventoryComponent;
-});
+export default InventoryComponent;

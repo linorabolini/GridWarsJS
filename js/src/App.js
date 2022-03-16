@@ -1,23 +1,16 @@
-define(function (require) {
-    'use strict';
+const Entity = require("entity"),
+    input = require("input"),
+    KeyboardController = require("keyboard"),
+    server = require("server"),
+    LevelScreen = require("levelScreen");
 
-    var Entity = require('entity'),
-        files = require('files'),
-        input = require('input'),
-        KeyboardController = require('keyboard'),
-        Controller = require('controller'),
-        server = require('server'),
-        config = require('config'),
-        LevelScreen = require('levelScreen');
-
-    function App () {
+class App extends Entity {
+    constructor() {
         this.screen = null;
-        Entity.call(this);
+        super();
     }
 
-    App.prototype = new Entity();
-
-    App.prototype.setup = function () {
+    setup() {
         server.setup();
         this.startApp();
 
@@ -31,24 +24,26 @@ define(function (require) {
         // }));
 
         // add keyboard source
-        input.addSource(new KeyboardController({
-            '65': 'ARROW_LEFT',
-            '68': 'ARROW_RIGHT',
-            '83': 'ARROW_DOWN',
-            '87': 'ARROW_UP',
-            '71': 'ARROW_2_DOWN',
-            '70': 'ARROW_2_LEFT',
-            '72': 'ARROW_2_RIGHT',
-            '84': 'ARROW_2_UP'
-        }));
+        input.addSource(
+            new KeyboardController({
+                65: "ARROW_LEFT",
+                68: "ARROW_RIGHT",
+                83: "ARROW_DOWN",
+                87: "ARROW_UP",
+                71: "ARROW_2_DOWN",
+                70: "ARROW_2_LEFT",
+                72: "ARROW_2_RIGHT",
+                84: "ARROW_2_UP",
+            })
+        );
     }
 
-    App.prototype.startApp = function () {
+    startApp() {
         var screen = new LevelScreen();
         this.setScreen(screen);
     }
 
-    App.prototype.setScreen = function (newScreen) {
+    setScreen(newScreen) {
         if (this.screen) {
             this.removeChild(this.screen).dispose();
         }
@@ -56,6 +51,6 @@ define(function (require) {
         this.screen = newScreen;
         this.addChild(this.screen);
     }
+}
 
-    return new App();
-});
+export default App;
