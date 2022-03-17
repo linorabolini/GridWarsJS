@@ -145,7 +145,7 @@ class LevelScreen extends Entity {
     }
 
     createPointField() {
-        this.pointField = new PointField(this.playArea, this.scene, 80, 40);
+        this.pointField = new PointField(this.playArea, this.scene, 80, 80);
         this.addChild(this.pointField);
     }
 

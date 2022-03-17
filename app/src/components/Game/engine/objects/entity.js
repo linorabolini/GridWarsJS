@@ -66,7 +66,7 @@ class Entity {
     }
 
     deactivate() {
-        this.isActive = true;
+        this.isActive = false;
         this.components.forEach(c => c.deactivate(this));
         this.children.forEach(c => c.deactivate());
     }

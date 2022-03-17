@@ -17,7 +17,6 @@ class SpriteComponent extends Component {
         this.sprite = new THREE.Sprite(this.material);
     }
     setup(go) {
-        if(!this.scene) debugger
         this.sprite.position.copy(go.position);
         this.scene.add(this.sprite);
     }
