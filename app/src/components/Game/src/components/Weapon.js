@@ -45,6 +45,8 @@ class Weapon extends Component {
         this.tmpVector.copy(offset).applyQuaternion(this.quaternion);
 
         bullet.position.copy(go.position).add(this.tmpVector);
+        bullet.velocity.copy(go.velocity);
+        bullet.acceleration.copy(go.acceleration)
 
         bullet.rotation = go.shootDirection;
         bullet.activate();

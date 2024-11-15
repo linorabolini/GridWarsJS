@@ -20,10 +20,10 @@ class SpriteComponent extends Component {
         this.sprite.position.copy(go.position);
         this.scene.add(this.sprite);
     }
-    // eslint-disable-next-line react/require-render-return
     render(go) {
         this.sprite.position.copy(go.position);
         this.sprite.material.rotation = go.rotation;
+        return
     }
     activate(go) {
         this.sprite.visible = true;

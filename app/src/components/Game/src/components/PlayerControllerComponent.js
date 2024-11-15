@@ -11,7 +11,7 @@ class PlayerController extends Component {
         this.particleManager = particleManager;
 
         // TODO: move this to a mover
-        this.speed = 10;
+        this.speed = 0.8;
     }
 
     update(go, delta) {
@@ -34,12 +34,12 @@ class PlayerController extends Component {
 
         if (this.tmpVector.lengthSq() !== 0) {
             // TODO: move this to a mover
-            go.velocity.add(this.tmpVector);
+            go.acceleration.add(this.tmpVector);
             this.particleDirection.copy(this.tmpVector).multiplyScalar(-1);
             this.particleManager.createBurst(
                 go.position,
                 this.particleDirection,
-                5,
+                50,
                 2,
                 3,
                 5

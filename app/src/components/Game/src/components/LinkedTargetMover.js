@@ -6,6 +6,7 @@ class LinkedTargetMover extends Component {
         this.targets = targets;
         this.fromIndex = fromIndex || 0;
         this.moveDirection = new THREE.Vector3(0, 0, 0);
+        this.maxDistance = 1;
     }
 
     update(go, delta) {
@@ -14,6 +15,12 @@ class LinkedTargetMover extends Component {
         if (!this.currentTarget) return;
 
         this.moveDirection.subVectors(this.currentTarget.position, go.position);
+
+        if (this.moveDirection.length() > this.maxDistance) {
+          this.moveDirection.setLength(this.moveDirection.length() - this.maxDistance);
+          go.position.add(this.moveDirection);
+        }
+
         go.position.lerp(this.currentTarget.position, 0.1);
         go.rotation = Math.atan2(this.moveDirection.y, this.moveDirection.x);
         super.update(go, delta);

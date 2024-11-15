@@ -4,6 +4,19 @@ import KeyboardController from "../engine/inputs/keyboard";
 import server from "../engine/server";
 import LevelScreen from "./screens/LevelScreen";
 
+input.addSource(
+    new KeyboardController({
+        65: "ARROW_LEFT",
+        68: "ARROW_RIGHT",
+        83: "ARROW_DOWN",
+        87: "ARROW_UP",
+        71: "ARROW_2_DOWN",
+        70: "ARROW_2_LEFT",
+        72: "ARROW_2_RIGHT",
+        84: "ARROW_2_UP", 
+    }), 0
+);
+
 class App extends Entity {
     constructor() {
         super();
@@ -24,18 +37,18 @@ class App extends Entity {
         // }));
 
         // add keyboard source
-        input.addSource(
-            new KeyboardController({
-                65: "ARROW_LEFT",
-                68: "ARROW_RIGHT",
-                83: "ARROW_DOWN",
-                87: "ARROW_UP",
-                71: "ARROW_2_DOWN",
-                70: "ARROW_2_LEFT",
-                72: "ARROW_2_RIGHT",
-                84: "ARROW_2_UP",
-            })
-        );
+        // input.addSource(
+        //     new KeyboardController({
+        //         65: "ARROW_LEFT",
+        //         68: "ARROW_RIGHT",
+        //         83: "ARROW_DOWN",
+        //         87: "ARROW_UP",
+        //         71: "ARROW_2_DOWN",
+        //         70: "ARROW_2_LEFT",
+        //         72: "ARROW_2_RIGHT",
+        //         84: "ARROW_2_UP",
+        //     })
+        // );
     }
 
     startApp() {
